@@ -1,0 +1,56 @@
+version: 2
+
+sources:
+  - name: staging_health
+    description: Raw Google Sheets demo health data loaded by Airbyte into the staging_health schema.
+    schema: staging_health
+    tables:
+      - name: raw_clinic_meetings
+        description: Raw clinic and doctor meeting records, one row per appointment/encounter source row.
+        loaded_at_field: _airbyte_extracted_at
+        columns:
+          - name: source_row_id
+          - name: meeting_id_raw
+          - name: child_id_raw
+          - name: beneficiary_id_raw
+          - name: household_id_raw
+
+      - name: raw_sanitary_dist
+        description: Raw sanitary product distribution events.
+        loaded_at_field: _airbyte_extracted_at
+        columns:
+          - name: source_row_id
+          - name: distribution_id_raw
+          - name: beneficiary_id_raw
+          - name: household_id_raw
+
+      - name: raw_child_dev_tracking
+        description: Raw child developmental disability tracking and therapy review visits.
+        loaded_at_field: _airbyte_extracted_at
+        columns:
+          - name: source_row_id
+          - name: tracking_id_raw
+          - name: child_id_raw
+          - name: caregiver_beneficiary_id_raw
+          - name: household_id_raw
+
+      - name: raw_maternal_risk
+        description: Raw maternal mortality risk factor and referral tracking visits.
+        loaded_at_field: _airbyte_extracted_at
+        columns:
+          - name: source_row_id
+          - name: pregnancy_id_raw
+          - name: visit_id_raw
+          - name: mother_id_raw
+          - name: beneficiary_id_raw
+          - name: household_id_raw
+
+      - name: raw_chatbot_interactions
+        description: Raw chatbot interaction events with optional links back to program records.
+        loaded_at_field: _airbyte_extracted_at
+        columns:
+          - name: source_row_id
+          - name: interaction_id_raw
+          - name: session_id_raw
+          - name: beneficiary_id_raw
+          - name: linked_record_id_raw

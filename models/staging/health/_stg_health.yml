@@ -1,0 +1,74 @@
+version: 2
+
+models:
+  - name: stg_health__clinic_meetings
+    description: Cleaned clinic and doctor meeting records with parsed dates, normalized IDs, and duplicate flags.
+    columns:
+      - name: clinic_meeting_row_sk
+        tests:
+          - not_null
+          - unique
+      - name: meeting_id
+        tests:
+          - not_null
+      - name: meeting_date
+      - name: meeting_status
+        tests:
+          - accepted_values:
+              values: ['completed', 'cancelled', 'no_show', 'rescheduled', 'doctor_unavailable']
+              config:
+                where: "meeting_status is not null"
+
+  - name: stg_health__sanitary_distribution
+    description: Cleaned sanitary product distribution events.
+    columns:
+      - name: sanitary_distribution_row_sk
+        tests:
+          - not_null
+          - unique
+      - name: distribution_id
+        tests:
+          - not_null
+      - name: product_type
+      - name: quantity
+
+  - name: stg_health__child_development_tracking
+    description: Cleaned child development tracking visits and therapy review data.
+    columns:
+      - name: child_development_row_sk
+        tests:
+          - not_null
+          - unique
+      - name: tracking_id
+        tests:
+          - not_null
+      - name: child_id
+        tests:
+          - not_null
+      - name: visit_date
+
+  - name: stg_health__maternal_mortality_risk
+    description: Cleaned maternal risk visits with derived high-risk and referral flags.
+    columns:
+      - name: maternal_risk_row_sk
+        tests:
+          - not_null
+          - unique
+      - name: visit_id
+        tests:
+          - not_null
+      - name: mother_id
+      - name: is_high_risk
+
+  - name: stg_health__chatbot_interactions
+    description: Cleaned chatbot interactions with normalized intent, consent, escalation, and linked record fields.
+    columns:
+      - name: chatbot_interaction_row_sk
+        tests:
+          - not_null
+          - unique
+      - name: interaction_id
+        tests:
+          - not_null
+      - name: session_id
+      - name: interaction_date
