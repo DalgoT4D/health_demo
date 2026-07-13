@@ -1,11 +1,16 @@
-# dbt_starter
-DBT Starter Template Repository with macros, CI/CD Templates/ Folder Structure which are commonly used in Dalgo's DBT Projects
+# health_demo
+
+dbt project for the Health Demo warehouse. The project cleans raw Airbyte-loaded
+Google Sheets data in `staging_health` and builds dashboard-ready marts.
 
 ### Using the starter project
 
 Try running the following commands:
-- dbt run
-- dbt test
+- `dbt deps`
+- `dbt build --target dev`
+
+The local profile name is `health_demo`. Raw sources are expected in the
+`staging_health` schema.
 
 
 ### Resources:
@@ -14,4 +19,3 @@ Try running the following commands:
 - Join the [chat](https://community.getdbt.com/) on Slack for live discussions and support
 - Find [dbt events](https://events.getdbt.com) near you
 - Check out [the blog](https://blog.getdbt.com/) for the latest news on dbt's development and best practices
-
