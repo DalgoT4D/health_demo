@@ -6,6 +6,7 @@ sources:
     schema: staging_health
     tables:
       - name: raw_clinic_meetings
+        identifier: staging_healthraw_clinmeetings873603b48a31995cabd626da665cf131
         description: Raw clinic and doctor meeting records, one row per appointment/encounter source row.
         loaded_at_field: _airbyte_extracted_at
         columns:
@@ -16,6 +17,7 @@ sources:
           - name: household_id_raw
 
       - name: raw_sanitary_dist
+        identifier: staging_healthraw_saniary_dist5cfd419bca82ab508cf777a7fb40e88a
         description: Raw sanitary product distribution events.
         loaded_at_field: _airbyte_extracted_at
         columns:
@@ -25,6 +27,7 @@ sources:
           - name: household_id_raw
 
       - name: raw_child_dev_tracking
+        identifier: staging_healthraw_chiltrackingc3589612058855ae241c5478f741a200
         description: Raw child developmental disability tracking and therapy review visits.
         loaded_at_field: _airbyte_extracted_at
         columns:
@@ -35,6 +38,7 @@ sources:
           - name: household_id_raw
 
       - name: raw_maternal_risk
+        identifier: staging_healthraw_matenal_risk6c337b03d08f55efe3c49678f807b014
         description: Raw maternal mortality risk factor and referral tracking visits.
         loaded_at_field: _airbyte_extracted_at
         columns:
@@ -46,6 +50,7 @@ sources:
           - name: household_id_raw
 
       - name: raw_chatbot_interactions
+        identifier: staging_healthraw_chatractionsb257830021730cee62d9fbd9d586bd23
         description: Raw chatbot interaction events with optional links back to program records.
         loaded_at_field: _airbyte_extracted_at
         columns:
