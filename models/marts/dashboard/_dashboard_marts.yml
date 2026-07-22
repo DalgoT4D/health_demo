@@ -1,0 +1,68 @@
+version: 2
+
+models:
+  - name: mart_health_program_monthly
+    description: Monthly cross-program portfolio aggregation by program area and geography.
+
+  - name: mart_health_followup_queue
+    description: Operational follow-up queue for upcoming and overdue clinic, child development, and maternal health follow-ups.
+
+  - name: mart_health_clinic_delivery
+    description: Clinic service delivery mart for appointment completion, no-shows, referrals, visit reasons, provider mix, and clinic-site performance.
+    columns:
+      - name: meeting_month
+        description: Calendar month of the clinic meeting.
+      - name: appointment_count
+        description: Count of clinic appointment records at the selected grain.
+      - name: completed_appointments
+        description: Clinic appointments with completed status.
+      - name: no_show_appointments
+        description: Clinic appointments marked as no-show.
+
+  - name: mart_health_child_development
+    description: Child development mart for screening risk, therapy referrals, domain scores, school status, and active case follow-up.
+    columns:
+      - name: visit_month
+        description: Calendar month of the child development visit.
+      - name: below_cutoff_visits
+        description: Visits where at least one development score is below cutoff.
+      - name: therapy_referrals
+        description: Visits that resulted in a therapy referral.
+      - name: avg_domain_score
+        description: Average of available gross motor, fine motor, communication, and social scores.
+
+  - name: mart_health_maternal_risk
+    description: Maternal risk mart for high-risk pregnancy monitoring, anemia, hypertension, danger signs, referral status, transport support, and gestational profile.
+    columns:
+      - name: visit_month
+        description: Calendar month of the maternal risk visit.
+      - name: high_risk_visits
+        description: Visits classified high risk by maternal clinical criteria.
+      - name: referral_pending_visits
+        description: Maternal visits with referral pending status.
+      - name: avg_hemoglobin_g_dl
+        description: Average hemoglobin in grams per deciliter.
+
+  - name: mart_health_menstrual_distribution
+    description: Menstrual health distribution mart for product quantities, beneficiary group reach, channel mix, stockouts, awareness sessions, and receipt acknowledgement.
+    columns:
+      - name: distribution_month
+        description: Calendar month of the product distribution.
+      - name: total_quantity
+        description: Total distributed quantity at the selected grain.
+      - name: stockout_event_count
+        description: Count of distribution records where a stockout was reported.
+      - name: awareness_attended_count
+        description: Count of distribution records with awareness session attendance.
+
+  - name: mart_health_chatbot_operations
+    description: Chatbot operations mart for intent volume, language/channel mix, linked records, response time, escalation reasons, and resolution status.
+    columns:
+      - name: interaction_month
+        description: Calendar month of the chatbot interaction.
+      - name: human_escalations
+        description: Interactions escalated to a human worker.
+      - name: urgent_interactions
+        description: Interactions labeled with urgent sentiment.
+      - name: avg_first_response_seconds
+        description: Average first bot response time in seconds.

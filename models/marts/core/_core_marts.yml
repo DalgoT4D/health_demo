@@ -91,9 +91,3 @@ models:
         tests:
           - accepted_values:
               values: ['clinic', 'menstrual_health', 'child_development', 'maternal_health', 'chatbot']
-
-  - name: mart_health_program_monthly
-    description: Monthly dashboard aggregation by program area and geography.
-
-  - name: mart_health_followup_queue
-    description: Operational follow-up queue for upcoming and overdue clinic, child development, and maternal health follow-ups.
