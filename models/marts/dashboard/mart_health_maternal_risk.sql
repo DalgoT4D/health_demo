@@ -21,7 +21,9 @@ with visits as (
 
 select
     visit_month,
+    coalesce(state, 'Unknown') as state,
     coalesce(district, 'Unknown') as district,
+    coalesce(partner_ngo, 'Unassigned Partner') as partner_ngo,
     coalesce(ward, 'Unknown') as ward,
     coalesce(area, 'Unknown') as area,
     coalesce(risk_level, 'Unknown') as risk_level,
@@ -52,4 +54,4 @@ select
     round(avg(gestational_age_weeks), 1) as avg_gestational_age_weeks
 from visits
 where visit_month is not null
-group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
+group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15

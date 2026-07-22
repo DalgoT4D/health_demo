@@ -1,6 +1,8 @@
 select
     meeting_month,
+    coalesce(state, 'Unknown') as state,
     coalesce(district, 'Unknown') as district,
+    coalesce(partner_ngo, 'Unassigned Partner') as partner_ngo,
     coalesce(ward, 'Unknown') as ward,
     coalesce(area, 'Unknown') as area,
     coalesce(clinic_site, 'Unknown') as clinic_site,
@@ -22,4 +24,4 @@ select
     round(avg(duration_minutes) filter (where duration_minutes is not null), 1) as avg_duration_minutes
 from {{ ref('fct_health_clinic_meetings') }}
 where meeting_month is not null
-group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12

@@ -1,7 +1,9 @@
 select
     event_month,
     program_area,
+    coalesce(state, 'Unknown') as state,
     coalesce(district, 'Unknown') as district,
+    coalesce(partner_ngo, 'Unassigned Partner') as partner_ngo,
     coalesce(ward, 'Unknown') as ward,
     coalesce(area, 'Unknown') as area,
     count(*) as event_count,
@@ -15,4 +17,4 @@ select
     sum(escalated_to_human::integer) as chatbot_escalations
 from {{ ref('mart_health_service_events') }}
 where event_month is not null
-group by 1, 2, 3, 4, 5
+group by 1, 2, 3, 4, 5, 6, 7

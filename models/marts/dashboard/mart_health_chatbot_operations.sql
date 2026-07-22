@@ -1,6 +1,8 @@
 select
     interaction_month,
+    coalesce(state, 'Unknown') as state,
     coalesce(district, 'Unknown') as district,
+    coalesce(partner_ngo, 'Unassigned Partner') as partner_ngo,
     coalesce(ward, 'Unknown') as ward,
     coalesce(area, 'Unknown') as area,
     coalesce(channel, 'Unknown') as channel,
@@ -27,4 +29,4 @@ select
     round(avg(message_count), 1) as avg_message_count
 from {{ ref('fct_health_chatbot_interactions') }}
 where interaction_month is not null
-group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
+group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14

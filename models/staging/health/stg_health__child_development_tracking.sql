@@ -36,7 +36,9 @@ cleaned as (
             else null
         end as sex,
 
-        initcap({{ clean_label('district_raw') }}) as district,
+        {{ india_district_name(clean_label('district_raw')) }} as district,
+        {{ canonical_india_state(clean_text('state_raw'), clean_label('district_raw')) }} as state,
+        {{ canonical_partner_ngo(clean_text('partner_ngo_raw'), clean_label('district_raw')) }} as partner_ngo,
         upper({{ clean_text('ward_raw') }}) as ward,
         initcap({{ clean_label('area_raw') }}) as area,
 

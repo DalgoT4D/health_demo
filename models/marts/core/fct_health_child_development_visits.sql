@@ -14,6 +14,8 @@ select
     round(child.age_months / 12.0, 1) as age_years,
     child.sex,
     coalesce(child.district, households.district) as district,
+    coalesce(child.state, households.state) as state,
+    coalesce(child.partner_ngo, households.partner_ngo) as partner_ngo,
     coalesce(child.ward, households.ward) as ward,
     coalesce(child.area, households.area) as area,
     child.screening_tool,

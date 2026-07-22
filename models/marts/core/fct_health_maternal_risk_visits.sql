@@ -13,6 +13,8 @@ select
     risk.estimated_delivery_date,
     risk.next_visit_date,
     coalesce(risk.district, households.district) as district,
+    coalesce(risk.state, households.state) as state,
+    coalesce(risk.partner_ngo, households.partner_ngo) as partner_ngo,
     coalesce(risk.ward, households.ward) as ward,
     coalesce(risk.area, households.area) as area,
     risk.age_years,
