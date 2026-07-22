@@ -21,6 +21,9 @@ cleaned as (
         {{ clean_id('household_id_raw') }} as household_id,
         {{ clean_id('handoff_worker_id_raw') }} as handoff_worker_id,
         {{ clean_id('linked_record_id_raw') }} as linked_record_id,
+        {{ india_district_name(clean_label('district_raw')) }} as district,
+        {{ canonical_india_state(clean_text('state_raw'), clean_label('district_raw')) }} as state,
+        {{ canonical_partner_ngo(clean_text('partner_ngo_raw'), clean_label('district_raw')) }} as partner_ngo,
 
         {{ parse_raw_date('interaction_ts_raw') }} as interaction_date,
         initcap({{ clean_label('channel_raw') }}) as channel,

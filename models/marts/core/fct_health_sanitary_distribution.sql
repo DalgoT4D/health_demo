@@ -9,6 +9,8 @@ select
     dist.beneficiary_name,
     dist.age_years,
     coalesce(dist.district, households.district) as district,
+    coalesce(dist.state, households.state) as state,
+    coalesce(dist.partner_ngo, households.partner_ngo) as partner_ngo,
     coalesce(dist.ward, households.ward) as ward,
     coalesce(dist.area, households.area) as area,
     coalesce(dist.cluster, households.cluster) as cluster,

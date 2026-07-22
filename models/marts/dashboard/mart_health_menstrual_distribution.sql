@@ -1,6 +1,8 @@
 select
     distribution_month,
+    coalesce(state, 'Unknown') as state,
     coalesce(district, 'Unknown') as district,
+    coalesce(partner_ngo, 'Unassigned Partner') as partner_ngo,
     coalesce(ward, 'Unknown') as ward,
     coalesce(area, 'Unknown') as area,
     coalesce(cluster, 'Unknown') as cluster,
@@ -22,4 +24,4 @@ select
     sum((receipt_acknowledgement is not null)::integer) as acknowledged_receipts
 from {{ ref('fct_health_sanitary_distribution') }}
 where distribution_month is not null
-group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
+group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15

@@ -3,6 +3,8 @@ with household_mentions as (
     select
         household_id,
         district,
+        state,
+        partner_ngo,
         ward,
         area,
         cluster,
@@ -15,6 +17,8 @@ with household_mentions as (
     select
         household_id,
         district,
+        state,
+        partner_ngo,
         ward,
         area,
         null as cluster,
@@ -27,6 +31,8 @@ with household_mentions as (
     select
         household_id,
         district,
+        state,
+        partner_ngo,
         ward,
         area,
         null as cluster,
@@ -38,7 +44,9 @@ with household_mentions as (
 
     select
         household_id,
-        null as district,
+        district,
+        state,
+        partner_ngo,
         null as ward,
         null as area,
         null as cluster,
@@ -50,7 +58,9 @@ with household_mentions as (
 
     select
         household_id,
-        null as district,
+        district,
+        state,
+        partner_ngo,
         null as ward,
         null as area,
         null as cluster,
@@ -69,6 +79,8 @@ ranked as (
             partition by household_id
             order by
                 (district is null)::integer asc,
+                (state is null)::integer asc,
+                (partner_ngo is null)::integer asc,
                 (ward is null)::integer asc,
                 (area is null)::integer asc,
                 source_model asc
@@ -80,6 +92,8 @@ ranked as (
 select
     household_id,
     district,
+    state,
+    partner_ngo,
     ward,
     area,
     cluster,

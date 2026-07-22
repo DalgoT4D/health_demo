@@ -29,6 +29,9 @@ cleaned as (
         initcap({{ clean_label('doctor_name_raw') }}) as doctor_name,
         initcap(replace({{ clean_label('speciality_raw') }}, 'paediatric', 'pediatric')) as specialty,
         initcap({{ clean_label('patient_name_raw') }}) as patient_name,
+        {{ india_district_name(clean_label('district_raw')) }} as district,
+        {{ canonical_india_state(clean_text('state_raw'), clean_label('district_raw')) }} as state,
+        {{ canonical_partner_ngo(clean_text('partner_ngo_raw'), clean_label('district_raw')) }} as partner_ngo,
 
         case
             when {{ clean_label('sex_raw') }} in ('f', 'female') then 'female'
