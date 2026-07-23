@@ -90,4 +90,6 @@ models:
       - name: program_area
         tests:
           - accepted_values:
-              values: ['clinic', 'menstrual_health', 'child_development', 'maternal_health', 'chatbot']
+              values: ['Clinic Delivery', 'Menstrual Health', 'Child Development', 'Maternal Risk', 'Chatbot Operations']
+      - name: program_label
+        description: Human-readable program name for dashboard display and drilldown tables.

@@ -21,6 +21,8 @@
                     'maharashtra',
                     'mh'
                 ) then 'Maharashtra'
+            when {{ state_expression }} is not null
+                then initcap(regexp_replace(trim({{ state_expression }}::text), '\s+', ' ', 'g'))
             else {{ india_state_from_district(district_expression) }}
         end
     )
@@ -62,6 +64,8 @@
                     'janani vikas collective',
                     'janani vikas'
                 ) then 'Janani Vikas Collective'
+            when {{ partner_expression }} is not null
+                then initcap(regexp_replace(trim({{ partner_expression }}::text), '\s+', ' ', 'g'))
             when {{ india_district_name(district_expression) }} = 'Mumbai' then 'Aarogya Saathi Foundation'
             when {{ india_district_name(district_expression) }} = 'Thane' then 'Janani Vikas Collective'
             else 'Unassigned Partner'
