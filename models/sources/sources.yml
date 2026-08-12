@@ -1,0 +1,11 @@
+version: 2
+sources:
+- name: staging_health
+  schema: staging_health
+  tables:
+  - name: raw_child_dev_tracking
+    identifier: raw_child_dev_tracking
+    description: ''
+  - name: raw_sanitary_dist
+    identifier: raw_sanitary_dist
+    description: ''

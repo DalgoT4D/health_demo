@@ -2,4 +2,15 @@
 target/
 dbt_packages/
 logs/
-profiles.yml
+profiles.yml.venv/
+venv/
+profiles/
+**/profiles.yml
+**/profiles.yaml
+.user.yml
+package-lock.yml
+.env*
+.env.local
+elementary_profiles/
+*.html
+edr_target/
