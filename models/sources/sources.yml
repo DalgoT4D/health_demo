@@ -3,8 +3,17 @@ sources:
 - name: staging_health
   schema: staging_health
   tables:
+  - name: raw_chatbot_interactions
+    identifier: raw_chatbot_interactions
+    description: ''
   - name: raw_child_dev_tracking
     identifier: raw_child_dev_tracking
+    description: ''
+  - name: raw_clinic_meetings
+    identifier: raw_clinic_meetings
+    description: ''
+  - name: raw_maternal_risk
+    identifier: raw_maternal_risk
     description: ''
   - name: raw_sanitary_dist
     identifier: raw_sanitary_dist
