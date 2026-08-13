@@ -19,9 +19,9 @@ CAST("classroom_id" AS character varying) AS "classroom_id",
 CAST("academic_year" AS character varying) AS "academic_year",
 CAST("classroom_name" AS character varying) AS "classroom_name",
 CAST("classroom_status" AS character varying) AS "classroom_status",
-CAST("enrolled_students" AS integer) AS "enrolled_students",
+CAST("enrolled_students" AS numeric) AS "enrolled_students",
 CAST("school_management" AS character varying) AS "school_management",
-CAST("classroom_capacity" AS integer) AS "classroom_capacity",
+CAST("classroom_capacity" AS numeric) AS "classroom_capacity",
 CAST("_airtable_table_name" AS character varying) AS "_airtable_table_name",
 CAST("_airtable_created_time" AS character varying) AS "_airtable_created_time"
 FROM {{source('staging', 'education_ngo_airtable_source_xlsx_raw_classrooms_tblb_61427117')}}
