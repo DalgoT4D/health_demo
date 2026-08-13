@@ -2,37 +2,389 @@
 --Please make sure you dont change the model name 
 
 {{ config(materialized='table', schema='production') }}
-WITH cte1 as (
-SELECT trim(interaction_id_raw) as interaction_id,
-trim(session_id_raw) as session_id,
-trim(beneficiary_id_raw) as beneficiary_id,
-trim(mother_id_raw) as mother_id,
-trim(child_id_raw) as child_id,
-trim(household_id_raw) as household_id,
-case
-  when trim(interaction_ts_raw) ~ '^[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}' then make_date(split_part(substring(trim(interaction_ts_raw) from 1 for 10),'-',1)::integer, split_part(substring(trim(interaction_ts_raw) from 1 for 10),'-',2)::integer, split_part(substring(trim(interaction_ts_raw) from 1 for 10),'-',3)::integer)
-  when trim(interaction_ts_raw) ~ '^[0-9]{1,2}/[0-9]{1,2}/[0-9]{4}' and split_part(trim(interaction_ts_raw),'/',2)::integer > 12 then make_date(split_part(substring(trim(interaction_ts_raw) from 1 for 10),'/',3)::integer, split_part(trim(interaction_ts_raw),'/',1)::integer, split_part(trim(interaction_ts_raw),'/',2)::integer)
-  when trim(interaction_ts_raw) ~ '^[0-9]{1,2}/[0-9]{1,2}/[0-9]{4}' then make_date(split_part(substring(trim(interaction_ts_raw) from 1 for 10),'/',3)::integer, split_part(trim(interaction_ts_raw),'/',2)::integer, split_part(trim(interaction_ts_raw),'/',1)::integer)
-  else make_date(2026, ((coalesce(nullif(regexp_replace(interaction_id_raw,'[^0-9]','','g'),''),'1')::integer - 1) % 12) + 1, 15)
-end as interaction_date,
-initcap(replace(trim(intent_raw),'_',' ')) as intent,
-initcap(trim(free_text_topic_raw)) as free_text_topic,
-initcap(trim(channel_raw)) as channel,
-initcap(trim(language_raw)) as language,
-initcap(trim(sentiment_raw)) as sentiment,
-case when lower(trim(message_count_raw)) = 'one' then 1 else coalesce(nullif(regexp_replace(message_count_raw,'[^0-9]','','g'),''),'0')::integer end as message_count,
-case when lower(trim(first_response_seconds_raw)) = 'timeout' then null::integer else nullif(regexp_replace(first_response_seconds_raw,'[^0-9]','','g'),'')::integer end as first_response_seconds,
-case when trim(intent_confidence_raw) like '%!%%' escape '!' then nullif(regexp_replace(intent_confidence_raw,'[^0-9.]','','g'),'')::numeric / 100.0 else nullif(regexp_replace(intent_confidence_raw,'[^0-9.]','','g'),'')::numeric end as intent_confidence,
-lower(trim(escalated_to_human_raw)) in ('yes','y','true','1') as escalated_to_human,
-case when lower(trim(escalation_reason_raw)) in ('na','n/a','none','') then null else initcap(trim(escalation_reason_raw)) end as escalation_reason,
-initcap(replace(trim(resolution_status_raw),'_',' ')) as resolution_status,
-lower(trim(resolution_status_raw)) in ('resolved','completed','self served','self_serve') as resolved,
-lower(trim(consent_raw)) in ('yes','y','true','1','given') as consent,
-trim(linked_record_id_raw) as linked_record_id,
-initcap(replace(trim(linked_record_type_raw),'_',' ')) as linked_record_type,
-initcap(trim(district_raw)) as district,
-initcap(trim(state_raw)) as state,
-initcap(trim(partner_ngo_raw)) as partner_ngo  FROM {{source('staging_health', 'raw_chatbot_interactions')}})
+WITH cte16 as (
+SELECT "_airbyte_extracted_at", "_airbyte_generation_id", "_airbyte_meta", "_airbyte_raw_id", "beneficiary_id_raw", "bot_version_raw", "channel_raw", "child_id_raw", "consent_raw", "contact_last4_raw", "district_raw", "escalated_to_human_raw", "escalation_reason_raw", "first_response_seconds_raw", "free_text_topic_raw", "handoff_worker_id_raw", "household_id_raw", "intent_confidence_raw", "intent_raw", "interaction_id_raw", "interaction_ts_raw", "language_raw", "linked_record_id_raw", "linked_record_type_raw", "message_count_raw", "mother_id_raw", "partner_ngo_raw", "resolution_status_raw", "sentiment_raw", "session_id_raw", "source_row_id", "state_raw", "synthetic_record_flag", BTRIM("interaction_id_raw") AS interaction_id FROM {{source('staging_health', 'raw_chatbot_interactions')}}) , cte15 as (
+SELECT "_airbyte_extracted_at", "_airbyte_generation_id", "_airbyte_meta", "_airbyte_raw_id", "beneficiary_id_raw", "bot_version_raw", "channel_raw", "child_id_raw", "consent_raw", "contact_last4_raw", "district_raw", "escalated_to_human_raw", "escalation_reason_raw", "first_response_seconds_raw", "free_text_topic_raw", "handoff_worker_id_raw", "household_id_raw", "intent_confidence_raw", "intent_raw", "interaction_id_raw", "interaction_ts_raw", "language_raw", "linked_record_id_raw", "linked_record_type_raw", "message_count_raw", "mother_id_raw", "partner_ngo_raw", "resolution_status_raw", "sentiment_raw", "session_id_raw", "source_row_id", "state_raw", "synthetic_record_flag", BTRIM("session_id_raw") AS session_id FROM cte16) , cte14 as (
+SELECT "_airbyte_extracted_at", "_airbyte_generation_id", "_airbyte_meta", "_airbyte_raw_id", "beneficiary_id_raw", "bot_version_raw", "channel_raw", "child_id_raw", "consent_raw", "contact_last4_raw", "district_raw", "escalated_to_human_raw", "escalation_reason_raw", "first_response_seconds_raw", "free_text_topic_raw", "handoff_worker_id_raw", "household_id_raw", "intent_confidence_raw", "intent_raw", "interaction_id_raw", "interaction_ts_raw", "language_raw", "linked_record_id_raw", "linked_record_type_raw", "message_count_raw", "mother_id_raw", "partner_ngo_raw", "resolution_status_raw", "sentiment_raw", "session_id_raw", "source_row_id", "state_raw", "synthetic_record_flag", BTRIM("beneficiary_id_raw") AS beneficiary_id FROM cte15) , cte13 as (
+SELECT "_airbyte_extracted_at", "_airbyte_generation_id", "_airbyte_meta", "_airbyte_raw_id", "beneficiary_id_raw", "bot_version_raw", "channel_raw", "child_id_raw", "consent_raw", "contact_last4_raw", "district_raw", "escalated_to_human_raw", "escalation_reason_raw", "first_response_seconds_raw", "free_text_topic_raw", "handoff_worker_id_raw", "household_id_raw", "intent_confidence_raw", "intent_raw", "interaction_id_raw", "interaction_ts_raw", "language_raw", "linked_record_id_raw", "linked_record_type_raw", "message_count_raw", "mother_id_raw", "partner_ngo_raw", "resolution_status_raw", "sentiment_raw", "session_id_raw", "source_row_id", "state_raw", "synthetic_record_flag", BTRIM("mother_id_raw") AS mother_id FROM cte14) , cte12 as (
+SELECT "_airbyte_extracted_at", "_airbyte_generation_id", "_airbyte_meta", "_airbyte_raw_id", "beneficiary_id_raw", "bot_version_raw", "channel_raw", "child_id_raw", "consent_raw", "contact_last4_raw", "district_raw", "escalated_to_human_raw", "escalation_reason_raw", "first_response_seconds_raw", "free_text_topic_raw", "handoff_worker_id_raw", "household_id_raw", "intent_confidence_raw", "intent_raw", "interaction_id_raw", "interaction_ts_raw", "language_raw", "linked_record_id_raw", "linked_record_type_raw", "message_count_raw", "mother_id_raw", "partner_ngo_raw", "resolution_status_raw", "sentiment_raw", "session_id_raw", "source_row_id", "state_raw", "synthetic_record_flag", BTRIM("child_id_raw") AS child_id FROM cte13) , cte11 as (
+SELECT "_airbyte_extracted_at", "_airbyte_generation_id", "_airbyte_meta", "_airbyte_raw_id", "beneficiary_id_raw", "bot_version_raw", "channel_raw", "child_id_raw", "consent_raw", "contact_last4_raw", "district_raw", "escalated_to_human_raw", "escalation_reason_raw", "first_response_seconds_raw", "free_text_topic_raw", "handoff_worker_id_raw", "household_id_raw", "intent_confidence_raw", "intent_raw", "interaction_id_raw", "interaction_ts_raw", "language_raw", "linked_record_id_raw", "linked_record_type_raw", "message_count_raw", "mother_id_raw", "partner_ngo_raw", "resolution_status_raw", "sentiment_raw", "session_id_raw", "source_row_id", "state_raw", "synthetic_record_flag", BTRIM("household_id_raw") AS household_id FROM cte12) , cte10 as (
+SELECT "_airbyte_extracted_at", "_airbyte_generation_id", "_airbyte_meta", "_airbyte_raw_id", "beneficiary_id_raw", "bot_version_raw", "channel_raw", "child_id_raw", "consent_raw", "contact_last4_raw", "district_raw", "escalated_to_human_raw", "escalation_reason_raw", "first_response_seconds_raw", "free_text_topic_raw", "handoff_worker_id_raw", "household_id_raw", "intent_confidence_raw", "intent_raw", "interaction_id_raw", "interaction_ts_raw", "language_raw", "linked_record_id_raw", "linked_record_type_raw", "message_count_raw", "mother_id_raw", "partner_ngo_raw", "resolution_status_raw", "sentiment_raw", "session_id_raw", "source_row_id", "state_raw", "synthetic_record_flag", BTRIM("district_raw") AS district FROM cte11) , cte9 as (
+SELECT "_airbyte_extracted_at", "_airbyte_generation_id", "_airbyte_meta", "_airbyte_raw_id", "beneficiary_id_raw", "bot_version_raw", "channel_raw", "child_id_raw", "consent_raw", "contact_last4_raw", "district_raw", "escalated_to_human_raw", "escalation_reason_raw", "first_response_seconds_raw", "free_text_topic_raw", "handoff_worker_id_raw", "household_id_raw", "intent_confidence_raw", "intent_raw", "interaction_id_raw", "interaction_ts_raw", "language_raw", "linked_record_id_raw", "linked_record_type_raw", "message_count_raw", "mother_id_raw", "partner_ngo_raw", "resolution_status_raw", "sentiment_raw", "session_id_raw", "source_row_id", "state_raw", "synthetic_record_flag", BTRIM("state_raw") AS state FROM cte10) , cte8 as (
+SELECT "_airbyte_extracted_at", "_airbyte_generation_id", "_airbyte_meta", "_airbyte_raw_id", "beneficiary_id_raw", "bot_version_raw", "channel_raw", "child_id_raw", "consent_raw", "contact_last4_raw", "district_raw", "escalated_to_human_raw", "escalation_reason_raw", "first_response_seconds_raw", "free_text_topic_raw", "handoff_worker_id_raw", "household_id_raw", "intent_confidence_raw", "intent_raw", "interaction_id_raw", "interaction_ts_raw", "language_raw", "linked_record_id_raw", "linked_record_type_raw", "message_count_raw", "mother_id_raw", "partner_ngo_raw", "resolution_status_raw", "sentiment_raw", "session_id_raw", "source_row_id", "state_raw", "synthetic_record_flag", BTRIM("partner_ngo_raw") AS partner_ngo FROM cte9) , cte7 as (
+SELECT "_airbyte_extracted_at", "_airbyte_generation_id", "_airbyte_meta", "_airbyte_raw_id", "beneficiary_id_raw", "bot_version_raw", "channel_raw", "child_id_raw", "consent_raw", "contact_last4_raw", "district_raw", "escalated_to_human_raw", "escalation_reason_raw", "first_response_seconds_raw", "free_text_topic_raw", "handoff_worker_id_raw", "household_id_raw", "intent_confidence_raw", "intent_raw", "interaction_id_raw", "interaction_ts_raw", "language_raw", "linked_record_id_raw", "linked_record_type_raw", "message_count_raw", "mother_id_raw", "partner_ngo_raw", "resolution_status_raw", "sentiment_raw", "session_id_raw", "source_row_id", "state_raw", "synthetic_record_flag", BTRIM("interaction_ts_raw") AS interaction_date FROM cte8) , cte6 as (
+SELECT
+"_airbyte_extracted_at",
+"_airbyte_generation_id",
+"_airbyte_meta",
+"_airbyte_raw_id",
+"beneficiary_id_raw",
+"bot_version_raw",
+"channel_raw",
+"child_id_raw",
+"consent_raw",
+"contact_last4_raw",
+"district_raw",
+"escalated_to_human_raw",
+"escalation_reason_raw",
+"first_response_seconds_raw",
+"free_text_topic_raw",
+"handoff_worker_id_raw",
+"household_id_raw",
+"intent_confidence_raw",
+"intent_raw",
+"interaction_id_raw",
+"interaction_ts_raw",
+"language_raw",
+"linked_record_id_raw",
+"linked_record_type_raw",
+"message_count_raw",
+"mother_id_raw",
+"partner_ngo_raw",
+"resolution_status_raw",
+"sentiment_raw",
+"session_id_raw",
+"source_row_id",
+"state_raw",
+"synthetic_record_flag",
+CASE
+    WHEN "intent_raw" = ' ANC visit question' THEN 'ANC Visit Question'
+    WHEN "intent_raw" = 'ANC visit question' THEN 'ANC Visit Question'
+    WHEN "intent_raw" = 'ANC visit question ' THEN 'ANC Visit Question'
+    WHEN "intent_raw" = 'ANC VISIT QUESTION' THEN 'ANC Visit Question'
+    WHEN "intent_raw" = 'appointment reminder' THEN 'Appointment Reminder'
+    WHEN "intent_raw" = 'APPOINTMENT REMINDER' THEN 'Appointment Reminder'
+    WHEN "intent_raw" = ' child development screening' THEN 'Child Development Screening'
+    WHEN "intent_raw" = 'child development screening' THEN 'Child Development Screening'
+    WHEN "intent_raw" = 'child development screening ' THEN 'Child Development Screening'
+    WHEN "intent_raw" = 'danger sign' THEN 'Danger Sign'
+    WHEN "intent_raw" = 'emergency referral' THEN 'Emergency Referral'
+    WHEN "intent_raw" = 'emergency referral ' THEN 'Emergency Referral'
+    WHEN "intent_raw" = 'feedback' THEN 'Feedback'
+    WHEN "intent_raw" = 'FEEDBACK' THEN 'Feedback'
+    WHEN "intent_raw" = 'follow-up status' THEN 'Follow-Up Status'
+    WHEN "intent_raw" = 'language change' THEN 'Language Change'
+    WHEN "intent_raw" = 'LANGUAGE CHANGE' THEN 'Language Change'
+    WHEN "intent_raw" = 'mental health support' THEN 'Mental Health Support'
+    WHEN "intent_raw" = 'mental health support ' THEN 'Mental Health Support'
+    WHEN "intent_raw" = 'nutrition advice' THEN 'Nutrition Advice'
+    WHEN "intent_raw" = 'nutrition advice ' THEN 'Nutrition Advice'
+    WHEN "intent_raw" = ' period product request' THEN 'Period Product Request'
+    WHEN "intent_raw" = 'period product request' THEN 'Period Product Request'
+    WHEN "intent_raw" = 'period product request ' THEN 'Period Product Request'
+    WHEN "intent_raw" = ' pregnancy danger sign' THEN 'Pregnancy Danger Sign'
+    WHEN "intent_raw" = 'pregnancy danger sign' THEN 'Pregnancy Danger Sign'
+    WHEN "intent_raw" = ' program eligibility' THEN 'Program Eligibility'
+    WHEN "intent_raw" = 'program eligibility' THEN 'Program Eligibility'
+    WHEN "intent_raw" = 'PROGRAM ELIGIBILITY' THEN 'Program Eligibility'
+    WHEN "intent_raw" = 'stockout report' THEN 'Stockout Report'
+    WHEN "intent_raw" = ' therapy home activity' THEN 'Therapy Home Activity'
+    WHEN "intent_raw" = 'therapy home activity' THEN 'Therapy Home Activity'
+    ELSE 'Other'
+END AS "intent"
+FROM cte7
+) , cte5 as (
+SELECT
+"_airbyte_extracted_at",
+"_airbyte_generation_id",
+"_airbyte_meta",
+"_airbyte_raw_id",
+"beneficiary_id_raw",
+"bot_version_raw",
+"channel_raw",
+"child_id_raw",
+"consent_raw",
+"contact_last4_raw",
+"district_raw",
+"escalated_to_human_raw",
+"escalation_reason_raw",
+"first_response_seconds_raw",
+"free_text_topic_raw",
+"handoff_worker_id_raw",
+"household_id_raw",
+"intent",
+"intent_confidence_raw",
+"intent_raw",
+"interaction_id_raw",
+"interaction_ts_raw",
+"language_raw",
+"linked_record_id_raw",
+"linked_record_type_raw",
+"message_count_raw",
+"mother_id_raw",
+"partner_ngo_raw",
+"resolution_status_raw",
+"sentiment_raw",
+"session_id_raw",
+"source_row_id",
+"state_raw",
+"synthetic_record_flag",
+CASE
+    WHEN "language_raw" = 'Assamese' THEN 'Assamese'
+    WHEN "language_raw" = 'Bengali' THEN 'Bengali'
+    WHEN "language_raw" = 'English' THEN 'English'
+    WHEN "language_raw" = 'English ' THEN 'English'
+    WHEN "language_raw" = 'ENGLISH' THEN 'English'
+    WHEN "language_raw" = 'hindi' THEN 'Hindi'
+    WHEN "language_raw" = 'Hindi' THEN 'Hindi'
+    WHEN "language_raw" = ' Hindi' THEN 'Hindi'
+    WHEN "language_raw" = 'Hindi ' THEN 'Hindi'
+    WHEN "language_raw" = 'HINDI' THEN 'Hindi'
+    WHEN "language_raw" = 'hinglish' THEN 'Hinglish'
+    WHEN "language_raw" = 'Hinglish' THEN 'Hinglish'
+    WHEN "language_raw" = ' Hinglish' THEN 'Hinglish'
+    WHEN "language_raw" = 'Hinglish ' THEN 'Hinglish'
+    WHEN "language_raw" = 'HINGLISH' THEN 'Hinglish'
+    WHEN "language_raw" = 'Kannada' THEN 'Kannada'
+    WHEN "language_raw" = 'marathi' THEN 'Marathi'
+    WHEN "language_raw" = 'Marathi' THEN 'Marathi'
+    WHEN "language_raw" = ' Marathi' THEN 'Marathi'
+    WHEN "language_raw" = 'Marathi ' THEN 'Marathi'
+    WHEN "language_raw" = 'Tamil' THEN 'Tamil'
+    WHEN "language_raw" = 'Tamil ' THEN 'Tamil'
+    WHEN "language_raw" = 'TAMIL' THEN 'Tamil'
+    WHEN "language_raw" = 'Urdu' THEN 'Urdu'
+    WHEN "language_raw" = ' Urdu' THEN 'Urdu'
+    ELSE 'Other'
+END AS "language"
+FROM cte6
+) , cte4 as (
+SELECT
+"_airbyte_extracted_at",
+"_airbyte_generation_id",
+"_airbyte_meta",
+"_airbyte_raw_id",
+"beneficiary_id_raw",
+"bot_version_raw",
+"channel_raw",
+"child_id_raw",
+"consent_raw",
+"contact_last4_raw",
+"district_raw",
+"escalated_to_human_raw",
+"escalation_reason_raw",
+"first_response_seconds_raw",
+"free_text_topic_raw",
+"handoff_worker_id_raw",
+"household_id_raw",
+"intent",
+"intent_confidence_raw",
+"intent_raw",
+"interaction_id_raw",
+"interaction_ts_raw",
+"language",
+"language_raw",
+"linked_record_id_raw",
+"linked_record_type_raw",
+"message_count_raw",
+"mother_id_raw",
+"partner_ngo_raw",
+"resolution_status_raw",
+"sentiment_raw",
+"session_id_raw",
+"source_row_id",
+"state_raw",
+"synthetic_record_flag",
+CASE
+    WHEN "resolution_status_raw" = 'dropped' THEN 'Dropped'
+    WHEN "resolution_status_raw" = ' dropped' THEN 'Dropped'
+    WHEN "resolution_status_raw" = 'dropped ' THEN 'Dropped'
+    WHEN "resolution_status_raw" = 'duplicate' THEN 'Duplicate'
+    WHEN "resolution_status_raw" = 'DUPLICATE' THEN 'Duplicate'
+    WHEN "resolution_status_raw" = ' human follow-up' THEN 'Human Follow-Up'
+    WHEN "resolution_status_raw" = 'human follow up' THEN 'Human Follow-Up'
+    WHEN "resolution_status_raw" = 'human follow-up' THEN 'Human Follow-Up'
+    WHEN "resolution_status_raw" = 'human follow-up ' THEN 'Human Follow-Up'
+    WHEN "resolution_status_raw" = 'HUMAN FOLLOW-UP' THEN 'Human Follow-Up'
+    WHEN "resolution_status_raw" = 'pending' THEN 'Pending'
+    WHEN "resolution_status_raw" = ' pending' THEN 'Pending'
+    WHEN "resolution_status_raw" = 'pending ' THEN 'Pending'
+    WHEN "resolution_status_raw" = 'PENDING' THEN 'Pending'
+    WHEN "resolution_status_raw" = ' resolved by bot' THEN 'Resolved By Bot'
+    WHEN "resolution_status_raw" = 'resolved by bot' THEN 'Resolved By Bot'
+    WHEN "resolution_status_raw" = 'resolved by bot ' THEN 'Resolved By Bot'
+    WHEN "resolution_status_raw" = 'RESOLVED BY BOT' THEN 'Resolved By Bot'
+    WHEN "resolution_status_raw" = 'unknown' THEN 'Unknown'
+    WHEN "resolution_status_raw" = ' unknown' THEN 'Unknown'
+    ELSE 'Unknown'
+END AS "resolution_status"
+FROM cte5
+) , cte3 as (
+SELECT
+"_airbyte_extracted_at",
+"_airbyte_generation_id",
+"_airbyte_meta",
+"_airbyte_raw_id",
+"beneficiary_id_raw",
+"bot_version_raw",
+"channel_raw",
+"child_id_raw",
+"consent_raw",
+"contact_last4_raw",
+"district_raw",
+"escalated_to_human_raw",
+"escalation_reason_raw",
+"first_response_seconds_raw",
+"free_text_topic_raw",
+"handoff_worker_id_raw",
+"household_id_raw",
+"intent",
+"intent_confidence_raw",
+"intent_raw",
+"interaction_id_raw",
+"interaction_ts_raw",
+"language",
+"language_raw",
+"linked_record_id_raw",
+"linked_record_type_raw",
+"message_count_raw",
+"mother_id_raw",
+"partner_ngo_raw",
+"resolution_status",
+"resolution_status_raw",
+"sentiment_raw",
+"session_id_raw",
+"source_row_id",
+"state_raw",
+"synthetic_record_flag",
+CASE
+    WHEN "escalated_to_human_raw" = 'Y' THEN 'true'
+    WHEN "escalated_to_human_raw" = ' Y' THEN 'true'
+    WHEN "escalated_to_human_raw" = 'yes' THEN 'true'
+    WHEN "escalated_to_human_raw" = 'Yes' THEN 'true'
+    WHEN "escalated_to_human_raw" = ' Yes' THEN 'true'
+    WHEN "escalated_to_human_raw" = 'Yes ' THEN 'true'
+    WHEN "escalated_to_human_raw" = 'YES' THEN 'true'
+    WHEN "escalated_to_human_raw" = 'N' THEN 'false'
+    WHEN "escalated_to_human_raw" = 'no' THEN 'false'
+    WHEN "escalated_to_human_raw" = 'No' THEN 'false'
+    WHEN "escalated_to_human_raw" = ' No' THEN 'false'
+    WHEN "escalated_to_human_raw" = 'No ' THEN 'false'
+    WHEN "escalated_to_human_raw" = 'NO' THEN 'false'
+    WHEN "escalated_to_human_raw" = ' ' THEN 'false'
+    ELSE 'false'
+END AS "escalated_to_human"
+FROM cte4
+) , cte2 as (
+SELECT
+"_airbyte_extracted_at",
+"_airbyte_generation_id",
+"_airbyte_meta",
+"_airbyte_raw_id",
+"beneficiary_id_raw",
+"bot_version_raw",
+"channel_raw",
+"child_id_raw",
+"consent_raw",
+"contact_last4_raw",
+"district_raw",
+"escalated_to_human",
+"escalated_to_human_raw",
+"escalation_reason_raw",
+"first_response_seconds_raw",
+"free_text_topic_raw",
+"handoff_worker_id_raw",
+"household_id_raw",
+"intent",
+"intent_confidence_raw",
+"intent_raw",
+"interaction_id_raw",
+"interaction_ts_raw",
+"language",
+"language_raw",
+"linked_record_id_raw",
+"linked_record_type_raw",
+"message_count_raw",
+"mother_id_raw",
+"partner_ngo_raw",
+"resolution_status",
+"resolution_status_raw",
+"sentiment_raw",
+"session_id_raw",
+"source_row_id",
+"state_raw",
+"synthetic_record_flag",
+CASE
+    WHEN "escalation_reason_raw" = 'danger sign' THEN 'Danger Sign'
+    WHEN "escalation_reason_raw" = 'language issue' THEN 'Language Issue'
+    WHEN "escalation_reason_raw" = 'low confidence' THEN 'Low Confidence'
+    WHEN "escalation_reason_raw" = 'LOW CONFIDENCE' THEN 'Low Confidence'
+    WHEN "escalation_reason_raw" = 'possible emergency' THEN 'Possible Emergency'
+    WHEN "escalation_reason_raw" = 'service delay' THEN 'Service Delay'
+    WHEN "escalation_reason_raw" = 'user requested call' THEN 'User Requested Call'
+    WHEN "escalation_reason_raw" = 'USER REQUESTED CALL' THEN 'User Requested Call'
+    WHEN "escalation_reason_raw" = 'NA' THEN 'Not Applicable'
+    WHEN "escalation_reason_raw" = 'N/A' THEN 'Not Applicable'
+    WHEN "escalation_reason_raw" = 'not recorded' THEN 'Not Applicable'
+    WHEN "escalation_reason_raw" = ' null ' THEN 'Not Applicable'
+    ELSE 'Not Applicable'
+END AS "escalation_reason"
+FROM cte3
+) , cte1 as (
+SELECT
+"_airbyte_extracted_at",
+"_airbyte_generation_id",
+"_airbyte_meta",
+"_airbyte_raw_id",
+"beneficiary_id_raw",
+"bot_version_raw",
+"channel_raw",
+"child_id_raw",
+"consent_raw",
+"contact_last4_raw",
+"district_raw",
+"escalated_to_human",
+"escalated_to_human_raw",
+"escalation_reason",
+"escalation_reason_raw",
+"first_response_seconds_raw",
+"free_text_topic_raw",
+"handoff_worker_id_raw",
+"household_id_raw",
+"intent",
+"intent_confidence_raw",
+"intent_raw",
+"interaction_id_raw",
+"interaction_ts_raw",
+"language",
+"language_raw",
+"linked_record_id_raw",
+"linked_record_type_raw",
+"message_count_raw",
+"mother_id_raw",
+"partner_ngo_raw",
+"resolution_status",
+"resolution_status_raw",
+"sentiment_raw",
+"session_id_raw",
+"source_row_id",
+"state_raw",
+"synthetic_record_flag",
+CASE
+    WHEN "channel_raw" = 'field app' THEN 'Field App'
+    WHEN "channel_raw" = ' Field app' THEN 'Field App'
+    WHEN "channel_raw" = 'Field app' THEN 'Field App'
+    WHEN "channel_raw" = 'Field app ' THEN 'Field App'
+    WHEN "channel_raw" = 'IVR' THEN 'IVR'
+    WHEN "channel_raw" = ' IVR' THEN 'IVR'
+    WHEN "channel_raw" = 'IVR ' THEN 'IVR'
+    WHEN "channel_raw" = 'sms' THEN 'SMS'
+    WHEN "channel_raw" = 'SMS' THEN 'SMS'
+    WHEN "channel_raw" = ' SMS' THEN 'SMS'
+    WHEN "channel_raw" = 'SMS ' THEN 'SMS'
+    WHEN "channel_raw" = 'web chat' THEN 'Web Chat'
+    WHEN "channel_raw" = ' Web chat' THEN 'Web Chat'
+    WHEN "channel_raw" = 'Web chat' THEN 'Web Chat'
+    WHEN "channel_raw" = 'Web chat ' THEN 'Web Chat'
+    WHEN "channel_raw" = 'WEB CHAT' THEN 'Web Chat'
+    WHEN "channel_raw" = 'WhatsApp' THEN 'WhatsApp'
+    WHEN "channel_raw" = ' WhatsApp' THEN 'WhatsApp'
+    WHEN "channel_raw" = 'WhatsApp ' THEN 'WhatsApp'
+    WHEN "channel_raw" = 'WHATSAPP' THEN 'WhatsApp'
+    ELSE 'Other'
+END AS "channel"
+FROM cte2
+)
 -- Final SELECT statement combining the outputs of all CTEs
 SELECT *
 FROM cte1
