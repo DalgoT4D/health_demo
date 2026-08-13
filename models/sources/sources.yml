@@ -18,21 +18,3 @@ sources:
   - name: raw_sanitary_dist
     identifier: raw_sanitary_dist
     description: ''
-- name: staging
-  schema: staging
-  tables:
-  - name: education_ngo_airtable_source_xlsx_raw_assessments_tbl_19800387
-    identifier: education_ngo_airtable_source_xlsx_raw_assessments_tbl_19800387
-    description: ''
-  - name: education_ngo_airtable_source_xlsx_raw_attendance_log__46098356
-    identifier: education_ngo_airtable_source_xlsx_raw_attendance_log__46098356
-    description: ''
-  - name: education_ngo_airtable_source_xlsx_raw_classrooms_tblb_61427117
-    identifier: education_ngo_airtable_source_xlsx_raw_classrooms_tblb_61427117
-    description: ''
-  - name: education_ngo_airtable_source_xlsx_raw_students_tbl5xi_70289669
-    identifier: education_ngo_airtable_source_xlsx_raw_students_tbl5xi_70289669
-    description: ''
-  - name: education_ngo_airtable_source_xlsx_raw_teachers_tblpMm_88319572
-    identifier: education_ngo_airtable_source_xlsx_raw_teachers_tblpMm_88319572
-    description: ''
