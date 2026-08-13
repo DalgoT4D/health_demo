@@ -1,8 +1,8 @@
 --DBT AUTOMATION has generated this model, please DO NOT EDIT 
 --Please make sure you dont change the model name 
 
-{{ config(materialized='table', schema='production') }}
-WITH cte3 as (
+{{ config(materialized='table', schema='ui4t_staging') }}
+WITH cte2 as (
 SELECT
 "age_raw",
 "area",
@@ -126,9 +126,8 @@ CASE
     ELSE "distribution_date_text"
 END AS "distribution_date_normalized"
 FROM {{ref('ui4t_stage_health_menstrual')}}
-) , cte2 as (
-SELECT "age_raw", "area", "awareness_session_attended", "batch_no", "beneficiary_group", "beneficiary_id", "beneficiary_name", "cluster", "distribution_channel", "distribution_date_normalized", "distribution_date_text", "distribution_id", "distribution_unit", "district", "donor_or_program", "field_worker_id", "household_id", "partner_ngo", "product_type", "products_distributed", "receipt_acknowledgement", "state", "stockout_reported", "ward", TO_DATE("distribution_date_normalized", 'YYYY-MM-DD') AS distribution_date FROM cte3) , cte1 as (
-SELECT "age_raw", "area", "awareness_session_attended", "batch_no", "beneficiary_group", "beneficiary_id", "beneficiary_name", "cluster", "distribution_channel", "distribution_date_normalized", "distribution_date_text", "distribution_id", "distribution_unit", "district", "donor_or_program", "field_worker_id", "household_id", "partner_ngo", "product_type", "products_distributed", "receipt_acknowledgement", "state", "stockout_reported", "ward", TO_NUMBER("products_distributed", '999') AS products_distributed_numeric FROM cte2)
+) , cte1 as (
+SELECT "age_raw", "area", "awareness_session_attended", "batch_no", "beneficiary_group", "beneficiary_id", "beneficiary_name", "cluster", "distribution_channel", "distribution_date_normalized", "distribution_date_text", "distribution_id", "distribution_unit", "district", "donor_or_program", "field_worker_id", "household_id", "partner_ngo", "product_type", "products_distributed", "receipt_acknowledgement", "state", "stockout_reported", "ward", TO_DATE("distribution_date_normalized", 'YYYY-MM-DD') AS distribution_date FROM cte2)
 -- Final SELECT statement combining the outputs of all CTEs
 SELECT *
 FROM cte1
