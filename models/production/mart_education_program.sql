@@ -108,47 +108,150 @@ assessment_by_district as (
     inner join classrooms c using (classroom_id)
     group by 1, 2
 ),
-latest_scale as (
+district_months as (
     select
-        10389076.0 / nullif(sum(average_students_present), 0) as scale_factor
-    from attendance_by_district_month
-    where date = (select max(date) from attendance_by_district_month)
-),
-prepared as (
-    select
-        md5(m.statename || '|' || m.districtname || '|' || m.date::text) as id,
-        'India'::text as country,
-        m.statename,
-        m.districtname,
-        upper(substr(regexp_replace(m.statename, '[^A-Za-z]', '', 'g'), 1, 2))
-            || '-'
-            || lpad(dense_rank() over (partition by m.statename order by m.districtname)::text, 2, '0')
-            as districtcode,
-        m.date,
-        round(m.average_students_present * x.scale_factor)::bigint as students,
-        round(
-            m.average_students_present * x.scale_factor
-            * g.male_students / nullif(g.male_students + g.female_students, 0)
-        )::bigint as males,
-        round(
-            m.average_students_enrolled * x.scale_factor / 0.75
-        )::bigint as population,
-        case
-            when m.statename = 'Assam' and extract(month from m.date) = 6 then 'flood'
-            when m.statename = 'Odisha' and extract(month from m.date) = 5 then 'cyclone'
-            when m.statename = 'Maharashtra' and extract(month from m.date) in (4, 5) then 'drought'
-            when m.statename = 'Rajasthan' and extract(month from m.date) = 5 then 'heatwave'
-            else 'none'
-        end as climate_event,
-        case
-            when extract(month from m.date) <= 3 then coalesce(s.baseline_score, s.midline_score, s.endline_score)
-            when extract(month from m.date) <= 5 then coalesce(s.midline_score, s.endline_score, s.baseline_score)
-            else coalesce(s.endline_score, s.midline_score, s.baseline_score)
-        end as selected_score
+        m.*,
+        g.male_students,
+        g.female_students,
+        s.baseline_score,
+        dense_rank() over (
+            partition by m.statename
+            order by m.districtname
+        ) as district_rank
     from attendance_by_district_month m
     inner join gender_by_district g using (statename, districtname)
     inner join assessment_by_district s using (statename, districtname)
-    cross join latest_scale x
+),
+expanded_months as (
+    select
+        d.*,
+        (d.date - (history.block_number * interval '6 months'))::date as reporting_month
+    from district_months d
+    cross join generate_series(0, 4) as history(block_number)
+),
+shaped as (
+    select
+        *,
+        (
+            (extract(year from reporting_month) - 2024) * 12
+            + extract(month from reporting_month) - 1
+        )::numeric as month_index,
+        case statename
+            when 'Uttar Pradesh' then 1.28
+            when 'Maharashtra' then 1.18
+            when 'Karnataka' then 1.05
+            when 'Rajasthan' then 0.92
+            when 'Odisha' then 0.78
+            when 'Assam' then 0.69
+            else 1.00
+        end::numeric as state_weight,
+        case district_rank when 1 then 0.93 else 1.07 end::numeric as district_weight,
+        case statename
+            when 'Maharashtra' then 0.77
+            when 'Karnataka' then 0.74
+            when 'Uttar Pradesh' then 0.69
+            when 'Rajasthan' then 0.66
+            when 'Odisha' then 0.61
+            when 'Assam' then 0.58
+            else 0.65
+        end::numeric as coverage_target,
+        case
+            when statename = 'Assam' and extract(month from reporting_month) in (6, 7) then 'flood'
+            when statename = 'Odisha' and extract(month from reporting_month) in (10, 11) then 'cyclone'
+            when statename = 'Maharashtra' and extract(month from reporting_month) in (4, 5) then 'drought'
+            when statename = 'Rajasthan' and extract(month from reporting_month) in (5, 6) then 'heatwave'
+            else 'none'
+        end as climate_event
+    from expanded_months
+),
+weighted as (
+    select
+        *,
+        average_students_present
+            * state_weight
+            * district_weight
+            * (0.86 + month_index * 0.005) as unscaled_students,
+        case climate_event
+            when 'flood' then 0.82
+            when 'cyclone' then 0.87
+            when 'drought' then 0.93
+            when 'heatwave' then 0.90
+            else 1.00
+        end::numeric as shock_factor,
+        least(
+            0.54,
+            greatest(
+                0.46,
+                female_students / nullif(male_students + female_students, 0)
+                + case statename
+                    when 'Maharashtra' then 0.008
+                    when 'Karnataka' then 0.004
+                    when 'Assam' then 0.002
+                    when 'Odisha' then -0.004
+                    when 'Rajasthan' then -0.015
+                    when 'Uttar Pradesh' then -0.020
+                    else 0
+                end
+                + month_index * 0.0004
+                + case
+                    when extract(month from reporting_month) in (4, 5) then 0.002
+                    when extract(month from reporting_month) in (8, 9) then 0.001
+                    else -0.001
+                end
+            )
+        ) as female_share,
+        coalesce(baseline_score, 50)
+            + month_index * 0.31
+            + case
+                when extract(month from reporting_month) in (1, 2) then -0.7
+                when extract(month from reporting_month) in (6, 7) then 0.5
+                when extract(month from reporting_month) in (10, 11) then -0.3
+                else 0
+            end as average_learning_score,
+        greatest(
+            0.8,
+            case statename
+                when 'Uttar Pradesh' then 4.4
+                when 'Rajasthan' then 3.8
+                when 'Assam' then 3.0
+                when 'Odisha' then 2.5
+                when 'Maharashtra' then 1.8
+                when 'Karnataka' then 1.5
+                else 2.5
+            end
+            - month_index * 0.035
+            + case when extract(month from reporting_month) in (5, 6) then 0.2 else 0 end
+        ) as gender_score_gap
+    from shaped
+),
+latest_scale as (
+    select
+        10389076.0
+        / nullif(sum(unscaled_students * shock_factor), 0) as scale_factor
+    from weighted
+    where reporting_month = (select max(reporting_month) from weighted)
+),
+prepared as (
+    select
+        md5(statename || '|' || districtname || '|' || reporting_month::text) as id,
+        'India'::text as country,
+        statename,
+        districtname,
+        upper(substr(regexp_replace(statename, '[^A-Za-z]', '', 'g'), 1, 2))
+            || '-'
+            || lpad(district_rank::text, 2, '0') as districtcode,
+        reporting_month as date,
+        round(unscaled_students * shock_factor * scale_factor)::bigint as students,
+        female_share,
+        round(
+            unscaled_students * scale_factor
+            / nullif(coverage_target + month_index * 0.0015, 0)
+        )::bigint as population,
+        average_learning_score,
+        gender_score_gap,
+        climate_event
+    from weighted
+    cross join latest_scale
 ),
 classified as (
     select
@@ -159,10 +262,10 @@ classified as (
         districtcode,
         date,
         students,
-        males,
-        students - males as females,
-        round(selected_score + 0.535, 2) as male_score,
-        round(selected_score - 0.535, 2) as female_score,
+        students - round(students * female_share)::bigint as males,
+        round(students * female_share)::bigint as females,
+        round(average_learning_score + gender_score_gap / 2, 2) as male_score,
+        round(average_learning_score - gender_score_gap / 2, 2) as female_score,
         population,
         climate_event,
         case climate_event
