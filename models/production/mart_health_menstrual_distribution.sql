@@ -3,14 +3,13 @@
 
 {{ config(materialized='table', schema='production') }}
 WITH cte4 as (
-SELECT "_airbyte_raw_id", "_airbyte_extracted_at", "_airbyte_meta", "_airbyte_generation_id", "age_raw", "notes_raw", "entered_by", "quantity_raw", "source_row_id", "product_type_raw", "stockout_reported_raw", "synthetic_record_flag", "awareness_session_attended_raw", "area_raw" AS "area", "unit_raw" AS "distribution_unit", "ward_raw" AS "ward", "state_raw" AS "state", "cluster_raw" AS "cluster", "batch_no_raw" AS "batch_no", "district_raw" AS "district", "partner_ngo_raw" AS "partner_ngo", "receipt_ack_raw" AS "receipt_acknowledgement", "household_id_raw" AS "household_id", "beneficiary_id_raw" AS "beneficiary_id", "distribution_id_raw" AS "distribution_id", "field_worker_id_raw" AS "field_worker_id", "beneficiary_name_raw" AS "beneficiary_name", "donor_or_program_raw" AS "donor_or_program", "beneficiary_group_raw" AS "beneficiary_group", "distribution_date_raw" AS "distribution_date_text", "distribution_channel_raw" AS "distribution_channel"
+SELECT "_airbyte_raw_id", "_airbyte_extracted_at", "_airbyte_meta", "age_raw", "notes_raw", "entered_by", "quantity_raw", "source_row_id", "product_type_raw", "stockout_reported_raw", "synthetic_record_flag", "awareness_session_attended_raw", "area_raw" AS "area", "unit_raw" AS "distribution_unit", "ward_raw" AS "ward", "state_raw" AS "state", "cluster_raw" AS "cluster", "batch_no_raw" AS "batch_no", "district_raw" AS "district", "partner_ngo_raw" AS "partner_ngo", "receipt_ack_raw" AS "receipt_acknowledgement", "household_id_raw" AS "household_id", "beneficiary_id_raw" AS "beneficiary_id", "distribution_id_raw" AS "distribution_id", "field_worker_id_raw" AS "field_worker_id", "beneficiary_name_raw" AS "beneficiary_name", "donor_or_program_raw" AS "donor_or_program", "beneficiary_group_raw" AS "beneficiary_group", "distribution_date_raw" AS "distribution_date_text", "distribution_channel_raw" AS "distribution_channel"
  FROM {{source('staging_health', 'raw_sanitary_dist')}}
 ) , cte3 as (
 SELECT
 "_airbyte_raw_id",
 "_airbyte_extracted_at",
 "_airbyte_meta",
-"_airbyte_generation_id",
 "age_raw",
 "notes_raw",
 "entered_by",
@@ -44,7 +43,6 @@ SELECT
 "_airbyte_raw_id",
 "_airbyte_extracted_at",
 "_airbyte_meta",
-"_airbyte_generation_id",
 "age_raw",
 "notes_raw",
 "entered_by",
@@ -80,6 +78,15 @@ SELECT *,
       quantity_raw::numeric AS products_distributed_numeric,
       CASE WHEN lower(trim(stockout_reported_raw)) IN ('yes', 'y', 'true', '1') THEN 'true' ELSE 'false' END AS stockout_reported,
       CASE WHEN lower(trim(awareness_session_attended_raw)) IN ('yes', 'y', 'true', '1') THEN 'true' ELSE 'false' END AS awareness_session_attended,
+      CASE
+        WHEN trim(age_raw) ~ '^[0-9]+$' AND trim(age_raw)::integer < 15 THEN 'Under 15'
+        WHEN trim(age_raw) ~ '^[0-9]+$' AND trim(age_raw)::integer <= 19 THEN '15-19'
+        WHEN trim(age_raw) ~ '^[0-9]+$' AND trim(age_raw)::integer <= 24 THEN '20-24'
+        WHEN trim(age_raw) ~ '^[0-9]+$' AND trim(age_raw)::integer <= 34 THEN '25-34'
+        WHEN trim(age_raw) ~ '^[0-9]+$' AND trim(age_raw)::integer <= 44 THEN '35-44'
+        WHEN trim(age_raw) ~ '^[0-9]+$' THEN '45+'
+        ELSE 'Unknown'
+      END AS age_group,
       (CASE
     WHEN trim(distribution_date_text) ~ '^[0-9]{4}-[0-9]{1,2}-[0-9]{1,2}$'
       THEN make_date(split_part(trim(distribution_date_text), '-', 1)::integer, split_part(trim(distribution_date_text), '-', 2)::integer, split_part(trim(distribution_date_text), '-', 3)::integer)
