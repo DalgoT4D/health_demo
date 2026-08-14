@@ -3,13 +3,65 @@
 
 {{ config(materialized='table', schema='production') }}
 
-with classrooms as (
+with classroom_source as (
+    select *
+    from (
+        select
+            *,
+            row_number() over (
+                partition by _airtable_id
+                order by _airbyte_extracted_at desc
+            ) as source_row_number
+        from {{ source('airtable_education', 'classrooms') }}
+    ) ranked
+    where source_row_number = 1
+),
+attendance_source as (
+    select *
+    from (
+        select
+            *,
+            row_number() over (
+                partition by _airtable_id
+                order by _airbyte_extracted_at desc
+            ) as source_row_number
+        from {{ source('airtable_education', 'attendance') }}
+    ) ranked
+    where source_row_number = 1
+),
+student_source as (
+    select *
+    from (
+        select
+            *,
+            row_number() over (
+                partition by _airtable_id
+                order by _airbyte_extracted_at desc
+            ) as source_row_number
+        from {{ source('airtable_education', 'students') }}
+    ) ranked
+    where source_row_number = 1
+),
+assessment_source as (
+    select *
+    from (
+        select
+            *,
+            row_number() over (
+                partition by _airtable_id
+                order by _airbyte_extracted_at desc
+            ) as source_row_number
+        from {{ source('airtable_education', 'assessments') }}
+    ) ranked
+    where source_row_number = 1
+),
+classrooms as (
     select
         classroom_id,
         state as statename,
         district as districtname,
         enrolled_students::numeric as enrolled_students
-    from {{ source('airtable_education', 'classrooms') }}
+    from classroom_source
     where classroom_status = 'Active'
 ),
 attendance_by_classroom_month as (
@@ -19,7 +71,7 @@ attendance_by_classroom_month as (
         date_trunc('month', a.attendance_date_text)::date as date,
         avg(a.students_present_text)::numeric as average_students_present,
         avg(a.students_enrolled_text)::numeric as average_students_enrolled
-    from {{ source('airtable_education', 'attendance') }} a
+    from attendance_source a
     inner join classrooms c using (classroom_id)
     where a.record_status = 'Verified'
     group by 1, 2, 3, a.classroom_id
@@ -40,7 +92,7 @@ gender_by_district as (
         c.districtname,
         count(*) filter (where s.gender = 'Male')::numeric as male_students,
         count(*) filter (where s.gender = 'Female')::numeric as female_students
-    from {{ source('airtable_education', 'students') }} s
+    from student_source s
     inner join classrooms c using (classroom_id)
     where s.student_status = 'Enrolled'
     group by 1, 2
@@ -52,7 +104,7 @@ assessment_by_district as (
         avg(a.average_score) filter (where a.assessment_round = 'Baseline') as baseline_score,
         avg(a.average_score) filter (where a.assessment_round = 'Midline') as midline_score,
         avg(a.average_score) filter (where a.assessment_round = 'Endline') as endline_score
-    from {{ source('airtable_education', 'assessments') }} a
+    from assessment_source a
     inner join classrooms c using (classroom_id)
     group by 1, 2
 ),
