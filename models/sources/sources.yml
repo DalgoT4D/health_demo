@@ -18,3 +18,9 @@ sources:
   - name: raw_sanitary_dist
     identifier: raw_sanitary_dist
     description: ''
+- name: staging_education
+  schema: staging_education
+  tables:
+  - name: raw_student_program
+    identifier: raw_student_program
+    description: Synthetic monthly education program records for the demo dashboard.
