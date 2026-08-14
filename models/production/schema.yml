@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: mart_education_program
-    description: Monthly education program reach and learning outcomes by state and district.
+    description: Airtable-backed monthly education reach and learning outcomes by state and district.
     columns:
       - name: id
         data_tests:

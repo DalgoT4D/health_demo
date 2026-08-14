@@ -18,9 +18,20 @@ sources:
   - name: raw_sanitary_dist
     identifier: raw_sanitary_dist
     description: ''
-- name: staging_education
-  schema: staging_education
+- name: airtable_education
+  schema: staging
+  quoting:
+    identifier: true
   tables:
-  - name: raw_student_program
-    identifier: raw_student_program
-    description: Synthetic monthly education program records for the demo dashboard.
+  - name: classrooms
+    identifier: "{{ 'education_ngo_airtable_source_xlsx_raw_classrooms_tblbbORR7VAeB' if target.database == 'health_demo_staging' else 'education_ngo_airtable_source_xlsx_raw_classrooms_tblb_61427117' }}"
+    description: Airtable-ingested classroom and school geography records.
+  - name: students
+    identifier: "{{ 'education_ngo_airtable_source_xlsx_raw_students_tbl5xiq6Kk6dY6W' if target.database == 'health_demo_staging' else 'education_ngo_airtable_source_xlsx_raw_students_tbl5xi_70289669' }}"
+    description: Airtable-ingested student enrolment records.
+  - name: attendance
+    identifier: "{{ 'education_ngo_airtable_source_xlsx_raw_attendance_log_tbl9eYtjK' if target.database == 'health_demo_staging' else 'education_ngo_airtable_source_xlsx_raw_attendance_log__46098356' }}"
+    description: Airtable-ingested daily classroom attendance records.
+  - name: assessments
+    identifier: "{{ 'education_ngo_airtable_source_xlsx_raw_assessments_tblyTST6Cqcs' if target.database == 'health_demo_staging' else 'education_ngo_airtable_source_xlsx_raw_assessments_tbl_19800387' }}"
+    description: Airtable-ingested classroom learning assessment records.
