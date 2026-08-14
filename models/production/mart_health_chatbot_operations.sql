@@ -3,7 +3,7 @@
 
 {{ config(materialized='table', schema='production') }}
 WITH cte2 as (
-SELECT "_airbyte_raw_id", "_airbyte_extracted_at", "_airbyte_meta", "state_raw", "intent_raw", "channel_raw", "consent_raw", "child_id_raw", "district_raw", "language_raw", "mother_id_raw", "sentiment_raw", "source_row_id", "session_id_raw", "bot_version_raw", "partner_ngo_raw", "household_id_raw", "message_count_raw", "beneficiary_id_raw", "interaction_id_raw", "interaction_ts_raw", "free_text_topic_raw", "linked_record_id_raw", "escalation_reason_raw", "handoff_worker_id_raw", "intent_confidence_raw", "resolution_status_raw", "synthetic_record_flag", "escalated_to_human_raw", "linked_record_type_raw", "first_response_seconds_raw"
+SELECT "_airbyte_raw_id", "_airbyte_extracted_at", "_airbyte_meta", "_airbyte_generation_id", "state_raw", "intent_raw", "channel_raw", "consent_raw", "child_id_raw", "district_raw", "language_raw", "mother_id_raw", "sentiment_raw", "source_row_id", "session_id_raw", "bot_version_raw", "partner_ngo_raw", "household_id_raw", "message_count_raw", "beneficiary_id_raw", "interaction_id_raw", "interaction_ts_raw", "free_text_topic_raw", "linked_record_id_raw", "escalation_reason_raw", "handoff_worker_id_raw", "intent_confidence_raw", "resolution_status_raw", "synthetic_record_flag", "escalated_to_human_raw", "linked_record_type_raw", "first_response_seconds_raw"
 FROM {{ source('staging_health', 'raw_chatbot_interactions') }}
 ) , cte1 as (
 SELECT *,

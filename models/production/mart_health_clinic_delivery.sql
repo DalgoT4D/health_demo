@@ -7,6 +7,7 @@ SELECT
 "_airbyte_raw_id",
 "_airbyte_extracted_at",
 "_airbyte_meta",
+"_airbyte_generation_id",
 "age_raw",
 "sex_raw",
 "notes_raw",

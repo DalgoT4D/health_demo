@@ -14,3 +14,4 @@ package-lock.yml
 elementary_profiles/
 *.html
 edr_target/
+.venv/
