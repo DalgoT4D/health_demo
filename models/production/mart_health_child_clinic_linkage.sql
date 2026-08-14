@@ -2,7 +2,7 @@
 --Please make sure you dont change the model name 
 
 {{ config(materialized='table', schema='production') }}
-WITH cte1 as (
+WITH cte2 as (
 
 SELECT "t1"."_airbyte_extracted_at",
 "t1"."_airbyte_generation_id",
@@ -52,11 +52,51 @@ SELECT "t1"."_airbyte_extracted_at",
 "t1"."visit_date_source",
 "t1"."visit_date_text",
 "t1"."ward",
-"t1"."district"
+"t1"."district",
+"t2"."_airbyte_extracted_at" AS "_airbyte_extracted_at_2",
+"t2"."_airbyte_generation_id" AS "_airbyte_generation_id_2",
+"t2"."_airbyte_meta" AS "_airbyte_meta_2",
+"t2"."_airbyte_raw_id" AS "_airbyte_raw_id_2",
+"t2"."action_taken_raw",
+"t2"."age_raw",
+"t2"."beneficiary_id",
+"t2"."child_id_raw",
+"t2"."clinic_site",
+"t2"."diagnosis_or_concern_raw",
+"t2"."district" AS "district_2",
+"t2"."doctor_id_raw",
+"t2"."doctor_name_raw",
+"t2"."duration_mins_raw",
+"t2"."encounter_id",
+"t2"."entered_by" AS "entered_by_2",
+"t2"."follow_up_date",
+"t2"."household_id_raw",
+"t2"."last_updated_raw",
+"t2"."meeting_date_raw",
+"t2"."meeting_date_text",
+"t2"."meeting_id",
+"t2"."meeting_start_time_raw",
+"t2"."meeting_type",
+"t2"."meeting_type_raw",
+"t2"."notes_raw" AS "notes_raw_2",
+"t2"."partner_ngo_raw",
+"t2"."patient_name_raw",
+"t2"."reason_for_visit_raw",
+"t2"."referral_source_raw",
+"t2"."sex" AS "sex_2",
+"t2"."sex_raw",
+"t2"."source_row_id" AS "source_row_id_2",
+"t2"."speciality_raw",
+"t2"."state" AS "state_2",
+"t2"."status",
+"t2"."status_raw",
+"t2"."synthetic_record_flag" AS "synthetic_record_flag_2",
+"t2"."meeting_date"
  FROM {{ref('mart_health_child_development')}} t1
- LEFT JOIN {{ref('ui4t_health_clinic_meetings_unique')}} t2
+ LEFT JOIN {{ref('mart_health_clinic_delivery')}} t2
  ON "t1"."linked_clinic_meeting_id_raw" = "t2"."meeting_id"
-)
+) , cte1 as (
+SELECT DISTINCT ON (tracking_id) *  FROM cte2)
 -- Final SELECT statement combining the outputs of all CTEs
 SELECT *
 FROM cte1
