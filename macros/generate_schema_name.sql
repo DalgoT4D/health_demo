@@ -22,7 +22,12 @@
 
     {%- else -%}
 
-        {{ default_schema }}_{{ custom_schema_name | trim }}
+        {# UI4T final marts must land in the schema selected on the canvas. #}
+        {% if custom_schema_name | trim == 'production' %}
+            production
+        {% else %}
+            {{ default_schema }}_{{ custom_schema_name | trim }}
+        {% endif %}
 
     {%- endif -%}
 
