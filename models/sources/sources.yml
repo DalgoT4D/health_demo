@@ -18,43 +18,6 @@ sources:
   - name: raw_sanitary_dist
     identifier: raw_sanitary_dist
     description: ''
-- name: airtable_education
-  schema: staging
-  tables:
-  - name: '{{ ''education_ngo_airtable_source_xlsx_raw_classrooms_tblbbORR7VAeB''
-      if target.database == ''health_demo_staging'' else ''education_ngo_airtable_source_xlsx_raw_classrooms_tblb_61427117''
-      }}'
-    identifier: '{{ ''education_ngo_airtable_source_xlsx_raw_classrooms_tblbbORR7VAeB''
-      if target.database == ''health_demo_staging'' else ''education_ngo_airtable_source_xlsx_raw_classrooms_tblb_61427117''
-      }}'
-    description: ''
-  - name: '{{ ''education_ngo_airtable_source_xlsx_raw_students_tbl5xiq6Kk6dY6W''
-      if target.database == ''health_demo_staging'' else ''education_ngo_airtable_source_xlsx_raw_students_tbl5xi_70289669''
-      }}'
-    identifier: '{{ ''education_ngo_airtable_source_xlsx_raw_students_tbl5xiq6Kk6dY6W''
-      if target.database == ''health_demo_staging'' else ''education_ngo_airtable_source_xlsx_raw_students_tbl5xi_70289669''
-      }}'
-    description: ''
-  - name: '{{ ''education_ngo_airtable_source_xlsx_raw_attendance_log_tbl9eYtjK''
-      if target.database == ''health_demo_staging'' else ''education_ngo_airtable_source_xlsx_raw_attendance_log__46098356''
-      }}'
-    identifier: '{{ ''education_ngo_airtable_source_xlsx_raw_attendance_log_tbl9eYtjK''
-      if target.database == ''health_demo_staging'' else ''education_ngo_airtable_source_xlsx_raw_attendance_log__46098356''
-      }}'
-    description: ''
-  - name: '{{ ''education_ngo_airtable_source_xlsx_raw_assessments_tblyTST6Cqcs''
-      if target.database == ''health_demo_staging'' else ''education_ngo_airtable_source_xlsx_raw_assessments_tbl_19800387''
-      }}'
-    identifier: '{{ ''education_ngo_airtable_source_xlsx_raw_assessments_tblyTST6Cqcs''
-      if target.database == ''health_demo_staging'' else ''education_ngo_airtable_source_xlsx_raw_assessments_tbl_19800387''
-      }}'
-    description: ''
-- name: public
-  schema: public
-  tables:
-  - name: dalgo_brain_ngo_badges
-    identifier: dalgo_brain_ngo_badges
-    description: ''
 - name: staging_education
   schema: staging_education
   tables:
