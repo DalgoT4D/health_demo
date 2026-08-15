@@ -138,7 +138,16 @@ SELECT "age_raw",
     WHEN trim(distribution_date_text) ~ '^[0-9]+([.][0-9]+)?$'
       THEN date '1899-12-30' + floor(trim(distribution_date_text)::numeric)::integer
     ELSE make_date(2026, ((coalesce(nullif(regexp_replace(distribution_id, '[^0-9]', '', 'g'), ''), '1')::integer - 1) % 12) + 1, 15)
-  END AS distribution_date  FROM cte2)
+  END AS distribution_date,
+      CASE
+        WHEN NULLIF(REGEXP_REPLACE(COALESCE(age_raw, ''), '[^0-9.]', '', 'g'), '') IS NULL THEN 'Unknown'
+        WHEN NULLIF(REGEXP_REPLACE(COALESCE(age_raw, ''), '[^0-9.]', '', 'g'), '')::numeric < 15 THEN 'Under 15'
+        WHEN NULLIF(REGEXP_REPLACE(COALESCE(age_raw, ''), '[^0-9.]', '', 'g'), '')::numeric < 20 THEN '15-19'
+        WHEN NULLIF(REGEXP_REPLACE(COALESCE(age_raw, ''), '[^0-9.]', '', 'g'), '')::numeric < 25 THEN '20-24'
+        WHEN NULLIF(REGEXP_REPLACE(COALESCE(age_raw, ''), '[^0-9.]', '', 'g'), '')::numeric < 35 THEN '25-34'
+        WHEN NULLIF(REGEXP_REPLACE(COALESCE(age_raw, ''), '[^0-9.]', '', 'g'), '')::numeric < 45 THEN '35-44'
+        ELSE '45+'
+      END AS age_group  FROM cte2)
 -- Final SELECT statement combining the outputs of all CTEs
 SELECT *
 FROM cte1
