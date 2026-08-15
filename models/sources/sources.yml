@@ -49,9 +49,18 @@ sources:
       if target.database == ''health_demo_staging'' else ''education_ngo_airtable_source_xlsx_raw_assessments_tbl_19800387''
       }}'
     description: ''
+- name: public
+  schema: public
+  tables:
+  - name: dalgo_brain_ngo_badges
+    identifier: dalgo_brain_ngo_badges
+    description: ''
 - name: staging_education
   schema: staging_education
   tables:
-  - name: raw_student_program
-    identifier: raw_student_program
+  - name: edu_raw_classrooms_tblbbORR7VAeBhOdg
+    identifier: edu_raw_classrooms_tblbbORR7VAeBhOdg
+    description: ''
+  - name: edu_raw_students_tbl5xiq6Kk6dY6Wha
+    identifier: edu_raw_students_tbl5xiq6Kk6dY6Wha
     description: ''
