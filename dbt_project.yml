@@ -42,6 +42,3 @@ models:
     marts:
       +materialized: table
       +schema: marts
-      
-  elementary:
-    +schema: "elementary"
