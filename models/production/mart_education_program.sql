@@ -4,7 +4,11 @@
 {{ config(materialized='table', schema='production') }}
 WITH cte4 as (
 
-SELECT "t1"."gender",
+SELECT "t1"."_airbyte_raw_id",
+"t1"."_airbyte_extracted_at",
+"t1"."_airbyte_meta",
+"t1"."_airbyte_generation_id",
+"t1"."gender",
 "t1"."student_id",
 "t1"."_airtable_id",
 "t1"."classroom_id",
@@ -16,9 +20,10 @@ SELECT "t1"."gender",
 "t1"."_airtable_table_name",
 "t1"."enrollment_date_text",
 "t1"."_airtable_created_time",
-"t1"."_airbyte_raw_id",
-"t1"."_airbyte_extracted_at",
-"t1"."_airbyte_meta",
+"t2"."_airbyte_raw_id" AS "_airbyte_raw_id_2",
+"t2"."_airbyte_extracted_at" AS "_airbyte_extracted_at_2",
+"t2"."_airbyte_meta" AS "_airbyte_meta_2",
+"t2"."_airbyte_generation_id" AS "_airbyte_generation_id_2",
 "t2"."grade",
 "t2"."state",
 "t2"."section",
@@ -34,10 +39,7 @@ SELECT "t1"."gender",
 "t2"."school_management",
 "t2"."classroom_capacity",
 "t2"."_airtable_table_name" AS "_airtable_table_name_2",
-"t2"."_airtable_created_time" AS "_airtable_created_time_2",
-"t2"."_airbyte_raw_id" AS "_airbyte_raw_id_2",
-"t2"."_airbyte_extracted_at" AS "_airbyte_extracted_at_2",
-"t2"."_airbyte_meta" AS "_airbyte_meta_2"
+"t2"."_airtable_created_time" AS "_airtable_created_time_2"
  FROM {{source('staging_education', 'edu_raw_students_tbl5xiq6Kk6dY6Wha')}} t1
  LEFT JOIN {{source('staging_education', 'edu_raw_classrooms_tblbbORR7VAeBhOdg')}} t2
  ON "t1"."classroom_id" = "t2"."classroom_id"

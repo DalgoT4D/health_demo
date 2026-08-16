@@ -3,10 +3,14 @@
 
 {{ config(materialized='table', schema='production') }}
 WITH cte4 as (
-SELECT "age_raw", "notes_raw", "entered_by", "quantity_raw", "source_row_id", "product_type_raw", "stockout_reported_raw", "synthetic_record_flag", "awareness_session_attended_raw", "_airbyte_raw_id", "_airbyte_extracted_at", "_airbyte_meta", "area_raw" AS "area", "unit_raw" AS "distribution_unit", "ward_raw" AS "ward", "state_raw" AS "state", "cluster_raw" AS "cluster", "batch_no_raw" AS "batch_no", "district_raw" AS "district", "partner_ngo_raw" AS "partner_ngo", "receipt_ack_raw" AS "receipt_acknowledgement", "household_id_raw" AS "household_id", "beneficiary_id_raw" AS "beneficiary_id", "distribution_id_raw" AS "distribution_id", "field_worker_id_raw" AS "field_worker_id", "beneficiary_name_raw" AS "beneficiary_name", "donor_or_program_raw" AS "donor_or_program", "beneficiary_group_raw" AS "beneficiary_group", "distribution_date_raw" AS "distribution_date_text", "distribution_channel_raw" AS "distribution_channel"
+SELECT "_airbyte_raw_id", "_airbyte_extracted_at", "_airbyte_meta", "_airbyte_generation_id", "age_raw", "notes_raw", "entered_by", "quantity_raw", "source_row_id", "product_type_raw", "stockout_reported_raw", "synthetic_record_flag", "awareness_session_attended_raw", "area_raw" AS "area", "unit_raw" AS "distribution_unit", "ward_raw" AS "ward", "state_raw" AS "state", "cluster_raw" AS "cluster", "batch_no_raw" AS "batch_no", "district_raw" AS "district", "partner_ngo_raw" AS "partner_ngo", "receipt_ack_raw" AS "receipt_acknowledgement", "household_id_raw" AS "household_id", "beneficiary_id_raw" AS "beneficiary_id", "distribution_id_raw" AS "distribution_id", "field_worker_id_raw" AS "field_worker_id", "beneficiary_name_raw" AS "beneficiary_name", "donor_or_program_raw" AS "donor_or_program", "beneficiary_group_raw" AS "beneficiary_group", "distribution_date_raw" AS "distribution_date_text", "distribution_channel_raw" AS "distribution_channel"
  FROM {{source('staging_health', 'raw_sanitary_dist')}}
 ) , cte3 as (
 SELECT
+"_airbyte_raw_id",
+"_airbyte_extracted_at",
+"_airbyte_meta",
+"_airbyte_generation_id",
 "age_raw",
 "notes_raw",
 "entered_by",
@@ -15,9 +19,6 @@ SELECT
 "stockout_reported_raw",
 "synthetic_record_flag",
 "awareness_session_attended_raw",
-"_airbyte_raw_id",
-"_airbyte_extracted_at",
-"_airbyte_meta",
 "area",
 "distribution_unit",
 "ward",
@@ -38,17 +39,19 @@ REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE("quantit
 FROM cte4
 ) , cte2 as (
 SELECT
+"_airbyte_raw_id",
+"_airbyte_extracted_at",
+"_airbyte_meta",
+"_airbyte_generation_id",
 "age_raw",
 "notes_raw",
 "entered_by",
+"quantity_raw",
 "source_row_id",
 "product_type_raw",
 "stockout_reported_raw",
 "synthetic_record_flag",
 "awareness_session_attended_raw",
-"_airbyte_raw_id",
-"_airbyte_extracted_at",
-"_airbyte_meta",
 "area",
 "distribution_unit",
 "ward",
@@ -57,6 +60,7 @@ SELECT
 "batch_no",
 "district",
 "partner_ngo",
+"receipt_acknowledgement",
 "household_id",
 "beneficiary_id",
 "distribution_id",
@@ -65,6 +69,7 @@ SELECT
 "donor_or_program",
 "beneficiary_group",
 "distribution_date_text",
+"distribution_channel",
 "distribution_channel_clean",
 "receipt_acknowledgement_clean",
 CAST("quantity_clean" AS NUMERIC) AS "quantity_clean"
