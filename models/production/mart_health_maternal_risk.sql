@@ -4,10 +4,6 @@
 {{ config(materialized='table', schema='production') }}
 WITH cte2 as (
 SELECT
-"_airbyte_raw_id",
-"_airbyte_extracted_at",
-"_airbyte_meta",
-"_airbyte_generation_id",
 "bmi_raw",
 "edd_raw",
 "area_raw",
@@ -44,6 +40,9 @@ SELECT
 "synthetic_record_flag",
 "transport_support_raw",
 "gestational_age_weeks_raw",
+"_airbyte_raw_id",
+"_airbyte_extracted_at",
+"_airbyte_meta",
 CASE
     WHEN "risk_level_raw" = 'critical' THEN 'Critical'
     WHEN "risk_level_raw" = 'high' THEN 'High'

@@ -4,10 +4,6 @@
 {{ config(materialized='table', schema='production') }}
 WITH cte2 as (
 SELECT
-"_airbyte_raw_id",
-"_airbyte_extracted_at",
-"_airbyte_meta",
-"_airbyte_generation_id",
 "sex_raw",
 "area_raw",
 "ward_raw",
@@ -41,6 +37,9 @@ SELECT
 "caregiver_beneficiary_id_raw",
 "linked_clinic_meeting_id_raw",
 "sessions_attended_last_month_raw",
+"_airbyte_raw_id",
+"_airbyte_extracted_at",
+"_airbyte_meta",
 CASE
     WHEN "sex_raw" = 'F' THEN 'Female'
     WHEN "sex_raw" = 'M' THEN 'Male'

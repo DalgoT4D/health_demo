@@ -4,10 +4,6 @@
 {{ config(materialized='table', schema='production') }}
 WITH cte2 as (
 SELECT
-"_airbyte_raw_id",
-"_airbyte_extracted_at",
-"_airbyte_meta",
-"_airbyte_generation_id",
 "age_raw",
 "sex_raw",
 "notes_raw",
@@ -38,6 +34,9 @@ SELECT
 "synthetic_record_flag",
 "meeting_start_time_raw",
 "diagnosis_or_concern_raw",
+"_airbyte_raw_id",
+"_airbyte_extracted_at",
+"_airbyte_meta",
 CASE
     WHEN "status_raw" = 'completed' THEN 'Completed'
     WHEN "status_raw" = 'no show' THEN 'No Show'
