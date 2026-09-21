@@ -27,3 +27,9 @@ sources:
   - name: edu_raw_students_tbl5xiq6Kk6dY6Wha
     identifier: edu_raw_students_tbl5xiq6Kk6dY6Wha
     description: ''
+- name: elementary
+  schema: elementary
+  tables:
+  - name: schema_columns_snapshot
+    identifier: schema_columns_snapshot
+    description: ''
