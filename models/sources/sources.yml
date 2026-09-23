@@ -24,6 +24,9 @@ sources:
   - name: edu_raw_classrooms_tblbbORR7VAeBhOdg
     identifier: edu_raw_classrooms_tblbbORR7VAeBhOdg
     description: ''
+  - name: edu_raw_monthly_district_report
+    identifier: edu_raw_monthly_district_report
+    description: ''
   - name: edu_raw_students_tbl5xiq6Kk6dY6Wha
     identifier: edu_raw_students_tbl5xiq6Kk6dY6Wha
     description: ''

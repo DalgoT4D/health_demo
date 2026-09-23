@@ -3,59 +3,51 @@
 
 {{ config(materialized='table', schema='production') }}
 WITH cte4 as (
-
-SELECT "t1"."_airbyte_extracted_at",
-"t1"."_airbyte_meta",
-"t1"."_airbyte_raw_id",
-"t1"."academic_year",
-"t1"."classroom_id",
-"t1"."classroom_name",
-"t1"."enrollment_date_text",
-"t1"."gender",
-"t1"."guardian_phone",
-"t1"."student_id",
-"t1"."student_name",
-"t1"."student_status",
-"t2"."_airbyte_raw_id" AS "_airbyte_raw_id_2",
-"t2"."_airbyte_extracted_at" AS "_airbyte_extracted_at_2",
-"t2"."_airbyte_meta" AS "_airbyte_meta_2",
-"t2"."_airbyte_generation_id",
-"t2"."grade",
-"t2"."state",
-"t2"."section",
-"t2"."district",
-"t2"."school_id",
-"t2"."school_name",
-"t2"."classroom_id" AS "classroom_id_2",
-"t2"."academic_year" AS "academic_year_2",
-"t2"."classroom_name" AS "classroom_name_2",
-"t2"."classroom_status",
-"t2"."enrolled_students",
-"t2"."school_management",
-"t2"."classroom_capacity"
- FROM {{source('staging_education', 'edu_raw_students_tbl5xiq6Kk6dY6Wha')}} t1
- LEFT JOIN {{source('staging_education', 'edu_raw_classrooms_tblbbORR7VAeBhOdg')}} t2
- ON "t1"."classroom_id" = "t2"."classroom_id"
-) , cte3 as (
-SELECT CONCAT('EDU-', CASE state WHEN 'Maharashtra' THEN 'MH' WHEN 'Rajasthan' THEN 'RJ' WHEN 'Uttar Pradesh' THEN 'UP' WHEN 'Odisha' THEN 'OD' WHEN 'Assam' THEN 'AS' WHEN 'Karnataka' THEN 'KA' ELSE 'UN' END, '-', UPPER(LEFT(REGEXP_REPLACE(district, '[^A-Za-z]', '', 'g'), 3)), '-', TO_CHAR(m.report_month, 'YYYYMM')) AS id,
-'India'::text AS country,
-state AS statename,
-district AS districtname,
-CONCAT(CASE state WHEN 'Maharashtra' THEN 'MH' WHEN 'Rajasthan' THEN 'RJ' WHEN 'Uttar Pradesh' THEN 'UP' WHEN 'Odisha' THEN 'OD' WHEN 'Assam' THEN 'AS' WHEN 'Karnataka' THEN 'KA' ELSE 'UN' END, '-', UPPER(LEFT(REGEXP_REPLACE(district, '[^A-Za-z]', '', 'g'), 3))) AS districtcode,
-m.report_month::date AS date,
-ROUND(COUNT(DISTINCT student_id)::numeric * 10550 * w.state_weight * (1 + 0.012 * m.month_no) * CASE WHEN EXTRACT(MONTH FROM m.report_month) IN (7, 8) AND state IN ('Assam', 'Odisha') THEN 0.94 WHEN EXTRACT(MONTH FROM m.report_month) IN (4, 5) AND state IN ('Maharashtra', 'Rajasthan') THEN 0.97 WHEN EXTRACT(MONTH FROM m.report_month) IN (12, 1) AND state = 'Uttar Pradesh' THEN 0.98 ELSE 1 END)::bigint AS students,
-ROUND(ROUND(COUNT(DISTINCT student_id)::numeric * 10550 * w.state_weight * (1 + 0.012 * m.month_no) * CASE WHEN EXTRACT(MONTH FROM m.report_month) IN (7, 8) AND state IN ('Assam', 'Odisha') THEN 0.94 WHEN EXTRACT(MONTH FROM m.report_month) IN (4, 5) AND state IN ('Maharashtra', 'Rajasthan') THEN 0.97 WHEN EXTRACT(MONTH FROM m.report_month) IN (12, 1) AND state = 'Uttar Pradesh' THEN 0.98 ELSE 1 END) * (COUNT(DISTINCT CASE WHEN LOWER(gender) = 'male' THEN student_id END)::numeric / NULLIF(COUNT(DISTINCT student_id), 0) - 0.0008 * m.month_no))::bigint AS males,
-(ROUND(COUNT(DISTINCT student_id)::numeric * 10550 * w.state_weight * (1 + 0.012 * m.month_no) * CASE WHEN EXTRACT(MONTH FROM m.report_month) IN (7, 8) AND state IN ('Assam', 'Odisha') THEN 0.94 WHEN EXTRACT(MONTH FROM m.report_month) IN (4, 5) AND state IN ('Maharashtra', 'Rajasthan') THEN 0.97 WHEN EXTRACT(MONTH FROM m.report_month) IN (12, 1) AND state = 'Uttar Pradesh' THEN 0.98 ELSE 1 END) - ROUND(ROUND(COUNT(DISTINCT student_id)::numeric * 10550 * w.state_weight * (1 + 0.012 * m.month_no) * CASE WHEN EXTRACT(MONTH FROM m.report_month) IN (7, 8) AND state IN ('Assam', 'Odisha') THEN 0.94 WHEN EXTRACT(MONTH FROM m.report_month) IN (4, 5) AND state IN ('Maharashtra', 'Rajasthan') THEN 0.97 WHEN EXTRACT(MONTH FROM m.report_month) IN (12, 1) AND state = 'Uttar Pradesh' THEN 0.98 ELSE 1 END) * (COUNT(DISTINCT CASE WHEN LOWER(gender) = 'male' THEN student_id END)::numeric / NULLIF(COUNT(DISTINCT student_id), 0) - 0.0008 * m.month_no)))::bigint AS females,
-ROUND(((53.10 + 0.75 * m.month_no + CASE state WHEN 'Karnataka' THEN 1.10 WHEN 'Maharashtra' THEN 0.80 WHEN 'Rajasthan' THEN 0.25 WHEN 'Uttar Pradesh' THEN -0.35 WHEN 'Odisha' THEN -0.60 WHEN 'Assam' THEN -0.85 ELSE 0 END) + (0.65 - 0.015 * m.month_no))::numeric, 2) AS male_score,
-ROUND(((53.10 + 0.75 * m.month_no + CASE state WHEN 'Karnataka' THEN 1.10 WHEN 'Maharashtra' THEN 0.80 WHEN 'Rajasthan' THEN 0.25 WHEN 'Uttar Pradesh' THEN -0.35 WHEN 'Odisha' THEN -0.60 WHEN 'Assam' THEN -0.85 ELSE 0 END) - (0.65 - 0.015 * m.month_no))::numeric, 2) AS female_score,
-ROUND(COUNT(DISTINCT student_id)::numeric * 10550 * 12)::bigint AS population,
-CASE WHEN EXTRACT(MONTH FROM m.report_month) IN (7, 8) AND state IN ('Assam', 'Odisha') THEN 'flood' WHEN EXTRACT(MONTH FROM m.report_month) IN (4, 5) AND state IN ('Maharashtra', 'Rajasthan') THEN 'heatwave' WHEN EXTRACT(MONTH FROM m.report_month) IN (12, 1) AND state = 'Uttar Pradesh' THEN 'coldwave' ELSE 'none' END AS climate_event  FROM cte4 CROSS JOIN LATERAL (SELECT CASE state WHEN 'Maharashtra' THEN 1.18 WHEN 'Rajasthan' THEN 0.92 WHEN 'Uttar Pradesh' THEN 1.28 WHEN 'Odisha' THEN 0.78 WHEN 'Assam' THEN 0.69 WHEN 'Karnataka' THEN 1.15 ELSE 1.00 END::numeric AS state_weight) w CROSS JOIN LATERAL (SELECT report_month::date, ROW_NUMBER() OVER (ORDER BY report_month) - 1 AS month_no FROM GENERATE_SERIES(DATE '2025-06-01', DATE '2026-06-01', INTERVAL '1 month') report_month) m WHERE state IS NOT NULL AND district IS NOT NULL GROUP BY state, district, m.report_month, m.month_no, w.state_weight) , cte2 as (
 SELECT
-"id",
-"country",
+"_airbyte_extracted_at",
+"_airbyte_generation_id",
+"_airbyte_meta",
+"_airbyte_raw_id",
+"avg_score_boys_text",
+"avg_score_girls_text",
+"boys_reached_text",
+"disruption_type_raw",
+"district_raw",
+"girls_reached_text",
+"population_estimate_text",
+"report_id",
+"report_month_text",
+"source_row_id",
+"state_raw",
+"students_reached_text",
+"submission_status",
+"submitted_at_text",
+"submitted_by"
+FROM {{source('staging_education', 'edu_raw_monthly_district_report')}}
+WHERE ("submission_status" = 'Verified')) , cte3 as (
+SELECT initcap(trim(state_raw))::varchar AS statename,
+initcap(trim(district_raw))::varchar AS districtname,
+CASE
+  WHEN trim(report_month_text) ~ '^[0-9]{2}/[0-9]{2}/[0-9]{4}$'
+    THEN to_date(trim(report_month_text), 'DD/MM/YYYY')
+  ELSE to_date(trim(report_month_text), 'Mon-YYYY')
+END AS date,
+replace(trim(students_reached_text), ',', '')::bigint AS students,
+replace(trim(boys_reached_text), ',', '')::bigint AS males,
+replace(trim(girls_reached_text), ',', '')::bigint AS females,
+trim(avg_score_boys_text)::numeric AS male_score,
+trim(avg_score_girls_text)::numeric AS female_score,
+replace(trim(population_estimate_text), ',', '')::bigint AS population,
+CASE lower(regexp_replace(coalesce(disruption_type_raw, ''), '\s', '', 'g'))
+  WHEN 'flood'    THEN 'flood'
+  WHEN 'flooding' THEN 'flood'
+  WHEN 'heatwave' THEN 'heatwave'
+  WHEN 'coldwave' THEN 'coldwave'
+  ELSE 'none'
+END AS climate_event  FROM cte4) , cte2 as (
+SELECT
 "statename",
 "districtname",
-"districtcode",
 "date",
 "students",
 "males",
@@ -72,7 +64,22 @@ CASE
 END AS "climate_resilience_status"
 FROM cte3
 ) , cte1 as (
-SELECT id, country, statename, districtname, districtcode, date, students, males, females, male_score, female_score, population, climate_event, climate_resilience_status, ROUND(students::numeric / NULLIF(population, 0), 4) AS monthly_coverage_pct, ROUND(male_score - female_score, 2) AS score_gap  FROM cte2)
+SELECT 'EDU-' || CASE statename WHEN 'Maharashtra' THEN 'MH' WHEN 'Rajasthan' THEN 'RJ' WHEN 'Uttar Pradesh' THEN 'UP' WHEN 'Odisha' THEN 'OD' WHEN 'Assam' THEN 'AS' WHEN 'Karnataka' THEN 'KA' ELSE 'UN' END || '-' || upper(left(regexp_replace(districtname, '[^A-Za-z]', '', 'g'), 3)) || '-' || to_char(date, 'YYYYMM') AS id,
+'India'::text AS country,
+statename,
+districtname,
+CASE statename WHEN 'Maharashtra' THEN 'MH' WHEN 'Rajasthan' THEN 'RJ' WHEN 'Uttar Pradesh' THEN 'UP' WHEN 'Odisha' THEN 'OD' WHEN 'Assam' THEN 'AS' WHEN 'Karnataka' THEN 'KA' ELSE 'UN' END || '-' || upper(left(regexp_replace(districtname, '[^A-Za-z]', '', 'g'), 3)) AS districtcode,
+date,
+students,
+males,
+females,
+male_score,
+female_score,
+population,
+climate_event,
+climate_resilience_status,
+ROUND(students::numeric / NULLIF(population, 0), 4) AS monthly_coverage_pct,
+ROUND(male_score - female_score, 2) AS score_gap  FROM cte2)
 -- Final SELECT statement combining the outputs of all CTEs
 SELECT *
 FROM cte1
